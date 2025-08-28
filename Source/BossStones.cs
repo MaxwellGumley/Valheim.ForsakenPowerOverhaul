@@ -28,22 +28,22 @@ namespace ForsakenPowerOverhaul
 			if(New_String != "")
 			{
 				New_StringBuilder.Append("<size=24><smallcaps><color=orange>" + GetLocalization("$se_" + New_String.ToLower() + "_name") + "</color></smallcaps></size><size=20>\n");
-				New_StringBuilder.Append("<smallcaps>" + GetLocalization("$ui_fpo_passive") + "</smallcaps></size><size=16>\n" + GetToolTipStringFormat((StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_" + New_String + "_Passive"))) + "</size><size=20>\n");
+				New_StringBuilder.Append("<smallcaps>" + GetLocalization("$ui_fpo_passive") + "</smallcaps></size><size=16>\n" + GetToolTipStringFormat((StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_" + New_String + "_Passive"))) + "</size><size=20>\n");
 				
 				if(Mod_EpicLoot && !New_Bool)
 				{ New_StringBuilder.Append("	\n"); }
 				
-				New_StringBuilder.Append("<smallcaps>" + GetLocalization("$ui_fpo_equipped $ui_fpo_passive") + "</smallcaps></size><size=16>\n" + GetToolTipStringFormat((StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_" + New_String + "_Equipped"))) + "</size><size=20>\n");
+				New_StringBuilder.Append("<smallcaps>" + GetLocalization("$ui_fpo_equipped $ui_fpo_passive") + "</smallcaps></size><size=16>\n" + GetToolTipStringFormat((StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_" + New_String + "_Equipped"))) + "</size><size=20>\n");
 				
 				if(Mod_EpicLoot && !New_Bool)
 				{ New_StringBuilder.Append("	\n"); }
 				
-				New_StringBuilder.Append("<smallcaps>" + GetLocalization("$ui_fpo_active") + "</smallcaps></size><size=16>\n" + GetToolTipStringFormat(((StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_" + New_String + "_Active")))) + "</size><size=20>\n");
+				New_StringBuilder.Append("<smallcaps>" + GetLocalization("$ui_fpo_active") + "</smallcaps></size><size=16>\n" + GetToolTipStringFormat(((StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_" + New_String + "_Active")))) + "</size><size=20>\n");
 				
 				if(Mod_EpicLoot && !New_Bool)
 				{ New_StringBuilder.Append("	\n"); }
 				
-				New_StringBuilder.Append("<smallcaps>" + GetLocalization("$ui_fpo_shared $ui_fpo_active") + "</smallcaps></size><size=16>\n" + GetToolTipStringFormat(((StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_" + New_String + "_Shared")))) + "</size><size=20>\n\n");
+				New_StringBuilder.Append("<smallcaps>" + GetLocalization("$ui_fpo_shared $ui_fpo_active") + "</smallcaps></size><size=16>\n" + GetToolTipStringFormat(((StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_" + New_String + "_Shared")))) + "</size><size=20>\n\n");
 				
 				if(Mod_EpicLoot && !New_Bool)
 				{ New_StringBuilder.Append("	\n	\n"); }

@@ -1,5 +1,6 @@
 using BepInEx;
 using HarmonyLib;
+using HarmonyLib.Tools;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace ForsakenPowerOverhaul
 {
 	partial class ForsakenPowerOverhaul : BaseUnityPlugin
 	{
-		[HarmonyPatch(typeof(BossStone), nameof(BossStone.Start))]
+		[HarmonyPatch(typeof(BossStone), "Start")]
 		class Patch_BossStone_Start
 		{
 			static void Postfix(ref BossStone __instance)
@@ -23,7 +24,7 @@ namespace ForsakenPowerOverhaul
 			}
 		}
 		
-		[HarmonyPatch(typeof(BossStone), nameof(BossStone.DelayedAttachEffects_Step3))]
+		[HarmonyPatch(typeof(BossStone), "DelayedAttachEffects_Step3")]
 		class Patch_BossStone_DelayedAttachEffects_Step3
 		{
 			static void Postfix(ref BossStone __instance)
@@ -52,13 +53,13 @@ namespace ForsakenPowerOverhaul
 					{
 						if(!__instance.m_canBeRemoved)
 						{
-							if(ZoneSystem.m_instance.GetGlobalKey(__instance.m_guardianPower.m_name.Replace("$se_", "GK_FPO_BossStone_").Replace("_name", "")))
+							if(ZoneSystem.instance.GetGlobalKey(__instance.m_guardianPower.m_name.Replace("$se_", "GK_FPO_BossStone_").Replace("_name", "")))
 							{
 								__result = GetLocalization(GetBossStoneHoverText(GetBossName(__instance.m_currentItemName), true));
 							
 								if(!ConfigEntry_PowerCycle_Bool.Value)
 								{
-									if(!__instance.IsGuardianPowerActive(Player.m_localPlayer))
+									if(Player.m_localPlayer.GetGuardianPowerName() != __instance.m_guardianPower.m_name)
 									{ __result += GetLocalization("[<color=yellow><b>$KEY_Use</b></color>] $guardianstone_hook_activate"); }
 								}
 							}
@@ -70,7 +71,7 @@ namespace ForsakenPowerOverhaul
 			}
 		}
 		
-		[HarmonyPatch(typeof(ItemStand), nameof(ItemStand.IsGuardianPowerActive))]
+		[HarmonyPatch(typeof(ItemStand), "IsGuardianPowerActive")]
 		class Patch_ItemStand_IsGuardianPowerActive
 		{
 			static void Postfix(ref ItemStand __instance, ref bool __result)
@@ -114,20 +115,22 @@ namespace ForsakenPowerOverhaul
 					if(__instance.m_guardianPowerCooldown > 0.00F)
 					{ __result = false; }
 					
-					if(__instance.m_guardianSE == null)
+					var guardianSE = Traverse.Create(__instance).Field("m_guardianSE").GetValue();
+					if(guardianSE == null)
 					{ __result = false; }
 					
-					if(__instance.m_seman.GetStatusEffect(GetHash(__instance.GetGuardianPowerName().Replace("GP_", "SE_FPO_"))))
-					{ __instance.m_seman.RemoveStatusEffect(GetHash(__instance.GetGuardianPowerName().Replace("GP_", "SE_FPO_"))); }
+					var seman = Traverse.Create(__instance).Field("m_seman").GetValue<SEMan>();
+					if(seman.GetStatusEffect(GetHash(__instance.GetGuardianPowerName().Replace("GP_", "SE_FPO_"))))
+					{ seman.RemoveStatusEffect(GetHash(__instance.GetGuardianPowerName().Replace("GP_", "SE_FPO_"))); }
 					
-					__instance.m_seman.AddStatusEffect(GetHash(__instance.GetGuardianPowerName().Replace("GP_", "SE_FPO_")), true);
+					seman.AddStatusEffect(GetHash(__instance.GetGuardianPowerName().Replace("GP_", "SE_FPO_")), true);
 					__instance.m_guardianPowerCooldown = ConfigEntry_General_GuardianPower_CooldownDuration.Value;
 					
-					foreach(StatusEffect New_StatusEffect in __instance.m_seman.GetStatusEffects())
+					foreach(StatusEffect New_StatusEffect in seman.GetStatusEffects())
 					{
 						if(New_StatusEffect.name.StartsWith("SE_FPO_") && (New_StatusEffect.name != "SE_FPO_Passive") && (New_StatusEffect.name != __instance.GetGuardianPowerName().Replace("GP_", "SE_FPO_")))
 						{
-							__instance.m_seman.RemoveStatusEffect(New_StatusEffect);
+							seman.RemoveStatusEffect(New_StatusEffect);
 							break;
 						}
 					}
@@ -156,20 +159,22 @@ namespace ForsakenPowerOverhaul
 			}
 		}
 		
-		[HarmonyPatch(typeof(Player), nameof(Player.UpdateFood))]
+		[HarmonyPatch(typeof(Player), "UpdateFood")]
 		class Patch_Player_UpdateFood
 		{
 			static void Postfix(ref Player __instance)
 			{
 				if(__instance != null)
 				{
-					if(__instance.m_foodRegenTimer == 0.00F)
+					var foodRegenTimer = Traverse.Create(__instance).Field("m_foodRegenTimer").GetValue<float>();
+					if(foodRegenTimer == 0.00F)
 					{
 						float HealthRegen = 0.00F;
 						HealthRegen += Update_Player_BaseStats("HealthRegen", __instance);
 						
 						float regenMultiplier = 1.00F;
-						__instance.m_seman.ModifyHealthRegen(ref regenMultiplier);
+						var seman = Traverse.Create(__instance).Field("m_seman").GetValue<SEMan>();
+						seman.ModifyHealthRegen(ref regenMultiplier);
 						
 						__instance.Heal(HealthRegen * regenMultiplier);
 					}
@@ -194,7 +199,7 @@ namespace ForsakenPowerOverhaul
 			}
 		}
 		
-		[HarmonyPatch(typeof(Player), nameof(Player.SetMaxEitr))]
+		[HarmonyPatch(typeof(Player), "SetMaxEitr")]
 		class Patch_Player_SetMaxEitr
 		{
 			static bool Prefix(ref Player __instance, ref float eitr)
@@ -226,28 +231,67 @@ namespace ForsakenPowerOverhaul
 						EquipmentSpeedModifier = (EquipmentSpeedModifier < -1.00F) ? -1.00F : EquipmentSpeedModifier;
 						EquipmentSpeedModifier = 1.00F + EquipmentSpeedModifier;
 						
-						__instance.m_equipmentModifierValues[0] = 0.00F;
+						var equipmentModValues = Traverse.Create(__instance).Field("m_equipmentModifierValues").GetValue();
+						var rightItem = Traverse.Create(__instance).Field("m_rightItem").GetValue<ItemDrop.ItemData>();
+						var leftItem = Traverse.Create(__instance).Field("m_leftItem").GetValue<ItemDrop.ItemData>();
+						var chestItem = Traverse.Create(__instance).Field("m_chestItem").GetValue<ItemDrop.ItemData>();
+						var legItem = Traverse.Create(__instance).Field("m_legItem").GetValue<ItemDrop.ItemData>();
+						var helmetItem = Traverse.Create(__instance).Field("m_helmetItem").GetValue<ItemDrop.ItemData>();
+						var shoulderItem = Traverse.Create(__instance).Field("m_shoulderItem").GetValue<ItemDrop.ItemData>();
+						var utilityItem = Traverse.Create(__instance).Field("m_utilityItem").GetValue<ItemDrop.ItemData>();
 						
-						if(__instance.m_rightItem != null)
-						{ __instance.m_equipmentModifierValues[0] += (__instance.m_rightItem.m_shared.m_movementModifier < 0.00F) ? (__instance.m_rightItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : __instance.m_rightItem.m_shared.m_movementModifier; }
+						// Reset equipment modifier value
+						var movementField = Traverse.Create(equipmentModValues).Field("m_movement");
+						movementField.SetValue(0.00F);
 						
-						if(__instance.m_leftItem != null)
-						{ __instance.m_equipmentModifierValues[0] += (__instance.m_leftItem.m_shared.m_movementModifier < 0.00F) ? (__instance.m_leftItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : __instance.m_leftItem.m_shared.m_movementModifier; }
+						if(rightItem != null)
+						{ 
+							float currentVal = movementField.GetValue<float>();
+							float modifier = (rightItem.m_shared.m_movementModifier < 0.00F) ? (rightItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : rightItem.m_shared.m_movementModifier;
+							movementField.SetValue(currentVal + modifier);
+						}
 						
-						if(__instance.m_chestItem != null)
-						{ __instance.m_equipmentModifierValues[0] += (__instance.m_chestItem.m_shared.m_movementModifier < 0.00F) ? (__instance.m_chestItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : __instance.m_chestItem.m_shared.m_movementModifier; }
+						if(leftItem != null)
+						{ 
+							float currentVal = movementField.GetValue<float>();
+							float modifier = (leftItem.m_shared.m_movementModifier < 0.00F) ? (leftItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : leftItem.m_shared.m_movementModifier;
+							movementField.SetValue(currentVal + modifier);
+						}
 						
-						if(__instance.m_legItem != null)
-						{ __instance.m_equipmentModifierValues[0] += (__instance.m_legItem.m_shared.m_movementModifier < 0.00F) ? (__instance.m_legItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : __instance.m_legItem.m_shared.m_movementModifier; }
+						if(chestItem != null)
+						{ 
+							float currentVal = movementField.GetValue<float>();
+							float modifier = (chestItem.m_shared.m_movementModifier < 0.00F) ? (chestItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : chestItem.m_shared.m_movementModifier;
+							movementField.SetValue(currentVal + modifier);
+						}
 						
-						if(__instance.m_helmetItem != null)
-						{ __instance.m_equipmentModifierValues[0] += (__instance.m_helmetItem.m_shared.m_movementModifier < 0.00F) ? (__instance.m_helmetItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : __instance.m_helmetItem.m_shared.m_movementModifier; }
+						if(legItem != null)
+						{ 
+							float currentVal = movementField.GetValue<float>();
+							float modifier = (legItem.m_shared.m_movementModifier < 0.00F) ? (legItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : legItem.m_shared.m_movementModifier;
+							movementField.SetValue(currentVal + modifier);
+						}
 						
-						if(__instance.m_shoulderItem != null)
-						{ __instance.m_equipmentModifierValues[0] += (__instance.m_shoulderItem.m_shared.m_movementModifier < 0.00F) ? (__instance.m_shoulderItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : __instance.m_shoulderItem.m_shared.m_movementModifier; }
+						if(helmetItem != null)
+						{ 
+							float currentVal = movementField.GetValue<float>();
+							float modifier = (helmetItem.m_shared.m_movementModifier < 0.00F) ? (helmetItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : helmetItem.m_shared.m_movementModifier;
+							movementField.SetValue(currentVal + modifier);
+						}
 						
-						if(__instance.m_utilityItem != null)
-						{ __instance.m_equipmentModifierValues[0] += (__instance.m_utilityItem.m_shared.m_movementModifier < 0.00F) ? (__instance.m_utilityItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : __instance.m_utilityItem.m_shared.m_movementModifier; }
+						if(shoulderItem != null)
+						{ 
+							float currentVal = movementField.GetValue<float>();
+							float modifier = (shoulderItem.m_shared.m_movementModifier < 0.00F) ? (shoulderItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : shoulderItem.m_shared.m_movementModifier;
+							movementField.SetValue(currentVal + modifier);
+						}
+						
+						if(utilityItem != null)
+						{ 
+							float currentVal = movementField.GetValue<float>();
+							float modifier = (utilityItem.m_shared.m_movementModifier < 0.00F) ? (utilityItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : utilityItem.m_shared.m_movementModifier;
+							movementField.SetValue(currentVal + modifier);
+						}
 					}
 				}
 			}
@@ -263,8 +307,18 @@ namespace ForsakenPowerOverhaul
 					float HeatDamageModifier = 0.00F;
 					HeatDamageModifier += Update_Player_BaseStats("HeatDamageModifier", __instance);
 					
-					__instance.m_equipmentModifierValues[2] -= HeatDamageModifier;
-					__instance.m_equipmentModifierValues[2] = (__instance.m_equipmentModifierValues[2] > 1.00F) ? 1.00F : __instance.m_equipmentModifierValues[2];
+					// Access equipment modifier values through Traverse
+					var equipmentModValues = Traverse.Create(__instance).Field("m_equipmentModifierValues").GetValue();
+					if (equipmentModValues != null)
+					{
+						var modifiersField = Traverse.Create(equipmentModValues).Field("m_fire");
+						float currentFire = modifiersField.GetValue<float>();
+						modifiersField.SetValue(currentFire - HeatDamageModifier);
+						
+						// Clamp to max 1.0
+						float newValue = modifiersField.GetValue<float>();
+						if (newValue > 1.00F) modifiersField.SetValue(1.00F);
+					}
 				}
 			}
 		}
@@ -294,7 +348,7 @@ namespace ForsakenPowerOverhaul
 			}
 		}
 		
-		[HarmonyPatch(typeof(Ship), nameof(Ship.GetSailForce))]
+		[HarmonyPatch(typeof(Ship), "GetSailForce")]
 		class Patch_Ship_SailForce
 		{
 			static void Postfix(ref Ship __instance, ref Vector3 __result)
@@ -305,7 +359,8 @@ namespace ForsakenPowerOverhaul
 					{
 						float WindSpeedModifier = 0.00F;
 						
-						foreach(Player New_Player in __instance.m_players)
+						var shipPlayers = Traverse.Create(__instance).Field("m_players").GetValue<List<Player>>();
+						foreach(Player New_Player in shipPlayers)
 						{ WindSpeedModifier += Update_Player_BaseStats("WindSpeedModifier", New_Player); }
 						
 						__result *= 1.00F + WindSpeedModifier;
@@ -314,7 +369,7 @@ namespace ForsakenPowerOverhaul
 			}
 		}
 		
-		[HarmonyPatch(typeof(TextsDialog), nameof(TextsDialog.AddActiveEffects))]
+		[HarmonyPatch(typeof(TextsDialog), "AddActiveEffects")]
 		class Patch_TextsDialog_AddActiveEffects
 		{
 			static void Postfix(ref TextsDialog __instance)
@@ -359,9 +414,10 @@ namespace ForsakenPowerOverhaul
 						{ New_StringBuilder_FPO.Append(GetBossStoneHoverText(New_String, false)); }
 					}
 					
-					__instance.m_texts.RemoveAt(0);
-					__instance.m_texts.Insert(0, new TextsDialog.TextInfo(GetLocalization("$inventory_activeeffects"), GetLocalization(New_StringBuilder)));
-					__instance.m_texts.Insert(1, new TextsDialog.TextInfo(GetLocalization("$ui_fpo"), GetLocalization(New_StringBuilder_FPO)));
+					var textsList = Traverse.Create(__instance).Field("m_texts").GetValue<List<TextsDialog.TextInfo>>();
+					textsList.RemoveAt(0);
+					textsList.Insert(0, new TextsDialog.TextInfo(GetLocalization("$inventory_activeeffects"), GetLocalization(New_StringBuilder)));
+					textsList.Insert(1, new TextsDialog.TextInfo(GetLocalization("$ui_fpo"), GetLocalization(New_StringBuilder_FPO)));
 				}
 			}
 		}

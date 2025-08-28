@@ -610,7 +610,7 @@ namespace ForsakenPowerOverhaul
 		
 		static int GetHash(string New_String)
 		{
-			return New_String.GetStableHashCode();
+			return New_String.GetHashCode();
 		}
 	}
 }

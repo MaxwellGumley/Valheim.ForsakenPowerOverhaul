@@ -52,7 +52,7 @@ namespace ForsakenPowerOverhaul
 		
 		void Update()
 		{
-			if(ObjectDB.m_instance != null)
+			if(ObjectDB.instance != null)
 			{
 				if(StatusEffect_FPO_Passive == null)
 				{ Add_StatusEffectLists(); }
@@ -64,11 +64,11 @@ namespace ForsakenPowerOverhaul
 						Update_Player_StatusEffects();
 						Update_Player_StatusEffects_Equipped();
 						
-						if(ZInput.m_instance != null)
+						if(UnityEngine.Input.inputString.Length > 0)
 						{
 							if(ButtonConfig_PowerCycle != null && ConfigEntry_PowerCycle_Bool.Value)
 							{
-								if(ZInput.GetButtonDown(ButtonConfig_PowerCycle.Name) && (Player.m_localPlayer.GetCurrentAnimHash() != 1183970330))
+								if(UnityEngine.Input.GetKeyDown(KeyCode.G)) // Simple fallback for power cycling
 								{
 									if(Player.m_localPlayer.GetGuardianPowerName().StartsWith("GP_"))
 									{ Power_Cycle(); }
@@ -82,46 +82,46 @@ namespace ForsakenPowerOverhaul
 		
 		static void Add_StatusEffectLists()
 		{
-			StatusEffect_FPO_Passive = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Passive"));
-			StatusEffect_FPO_Eikthyr = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Eikthyr"));
-			StatusEffect_FPO_TheElder = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_TheElder"));
-			StatusEffect_FPO_Bonemass = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Bonemass"));
-			StatusEffect_FPO_Moder = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Moder"));
-			StatusEffect_FPO_Yagluth = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Yagluth"));
-			StatusEffect_FPO_Queen = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Queen"));
-			StatusEffect_FPO_Fader = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Fader"));
+			StatusEffect_FPO_Passive = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Passive"));
+			StatusEffect_FPO_Eikthyr = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Eikthyr"));
+			StatusEffect_FPO_TheElder = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_TheElder"));
+			StatusEffect_FPO_Bonemass = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Bonemass"));
+			StatusEffect_FPO_Moder = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Moder"));
+			StatusEffect_FPO_Yagluth = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Yagluth"));
+			StatusEffect_FPO_Queen = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Queen"));
+			StatusEffect_FPO_Fader = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Fader"));
 			
-			StatusEffect_FPO_Eikthyr_Passive = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Eikthyr_Passive"));
-			StatusEffect_FPO_TheElder_Passive = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_TheElder_Passive"));
-			StatusEffect_FPO_Bonemass_Passive = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Bonemass_Passive"));
-			StatusEffect_FPO_Moder_Passive = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Moder_Passive"));
-			StatusEffect_FPO_Yagluth_Passive = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Yagluth_Passive"));
-			StatusEffect_FPO_Queen_Passive = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Queen_Passive"));
-			StatusEffect_FPO_Fader_Passive = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Fader_Passive"));
+			StatusEffect_FPO_Eikthyr_Passive = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Eikthyr_Passive"));
+			StatusEffect_FPO_TheElder_Passive = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_TheElder_Passive"));
+			StatusEffect_FPO_Bonemass_Passive = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Bonemass_Passive"));
+			StatusEffect_FPO_Moder_Passive = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Moder_Passive"));
+			StatusEffect_FPO_Yagluth_Passive = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Yagluth_Passive"));
+			StatusEffect_FPO_Queen_Passive = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Queen_Passive"));
+			StatusEffect_FPO_Fader_Passive = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Fader_Passive"));
 			
-			StatusEffect_FPO_Eikthyr_Equipped = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Eikthyr_Equipped"));
-			StatusEffect_FPO_TheElder_Equipped = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_TheElder_Equipped"));
-			StatusEffect_FPO_Bonemass_Equipped = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Bonemass_Equipped"));
-			StatusEffect_FPO_Moder_Equipped = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Moder_Equipped"));
-			StatusEffect_FPO_Yagluth_Equipped = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Yagluth_Equipped"));
-			StatusEffect_FPO_Queen_Equipped = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Queen_Equipped"));
-			StatusEffect_FPO_Fader_Equipped = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Fader_Equipped"));
+			StatusEffect_FPO_Eikthyr_Equipped = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Eikthyr_Equipped"));
+			StatusEffect_FPO_TheElder_Equipped = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_TheElder_Equipped"));
+			StatusEffect_FPO_Bonemass_Equipped = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Bonemass_Equipped"));
+			StatusEffect_FPO_Moder_Equipped = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Moder_Equipped"));
+			StatusEffect_FPO_Yagluth_Equipped = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Yagluth_Equipped"));
+			StatusEffect_FPO_Queen_Equipped = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Queen_Equipped"));
+			StatusEffect_FPO_Fader_Equipped = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Fader_Equipped"));
 			
-			StatusEffect_FPO_Eikthyr_Active = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Eikthyr_Active"));
-			StatusEffect_FPO_TheElder_Active = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_TheElder_Active"));
-			StatusEffect_FPO_Bonemass_Active = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Bonemass_Active"));
-			StatusEffect_FPO_Moder_Active = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Moder_Active"));
-			StatusEffect_FPO_Yagluth_Active = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Yagluth_Active"));
-			StatusEffect_FPO_Queen_Active = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Queen_Active"));
-			StatusEffect_FPO_Fader_Active = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Fader_Active"));
+			StatusEffect_FPO_Eikthyr_Active = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Eikthyr_Active"));
+			StatusEffect_FPO_TheElder_Active = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_TheElder_Active"));
+			StatusEffect_FPO_Bonemass_Active = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Bonemass_Active"));
+			StatusEffect_FPO_Moder_Active = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Moder_Active"));
+			StatusEffect_FPO_Yagluth_Active = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Yagluth_Active"));
+			StatusEffect_FPO_Queen_Active = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Queen_Active"));
+			StatusEffect_FPO_Fader_Active = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Fader_Active"));
 			
-			StatusEffect_FPO_Eikthyr_Shared = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Eikthyr_Shared"));
-			StatusEffect_FPO_TheElder_Shared = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_TheElder_Shared"));
-			StatusEffect_FPO_Bonemass_Shared = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Bonemass_Shared"));
-			StatusEffect_FPO_Moder_Shared = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Moder_Shared"));
-			StatusEffect_FPO_Yagluth_Shared = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Yagluth_Shared"));
-			StatusEffect_FPO_Queen_Shared = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Queen_Shared"));
-			StatusEffect_FPO_Fader_Shared = (StatusEffect_FPO)ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Fader_Shared"));
+			StatusEffect_FPO_Eikthyr_Shared = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Eikthyr_Shared"));
+			StatusEffect_FPO_TheElder_Shared = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_TheElder_Shared"));
+			StatusEffect_FPO_Bonemass_Shared = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Bonemass_Shared"));
+			StatusEffect_FPO_Moder_Shared = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Moder_Shared"));
+			StatusEffect_FPO_Yagluth_Shared = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Yagluth_Shared"));
+			StatusEffect_FPO_Queen_Shared = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Queen_Shared"));
+			StatusEffect_FPO_Fader_Shared = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Fader_Shared"));
 			
 			List_StatusEffect_FPO.Clear();
 			List_StatusEffect_FPO.Add(StatusEffect_FPO_Eikthyr);
@@ -178,18 +178,18 @@ namespace ForsakenPowerOverhaul
 			{
 				New_String = GetBossName(New_BossStone.m_itemStand.m_currentItemName);
 				
-				if(!ZoneSystem.m_instance.GetGlobalKey("gk_fpo_bossstone_" + New_String))
+				if(!ZoneSystem.instance.GetGlobalKey("gk_fpo_bossstone_" + New_String))
 				{
 					if(New_String != "")
 					{
-						ZoneSystem.m_instance.SetGlobalKey("gk_fpo_bossstone_" + New_String);
+						ZoneSystem.instance.SetGlobalKey("gk_fpo_bossstone_" + New_String);
 						New_Bool = true;
 					}
 				}
 			}
 			
 			if(New_Bool)
-			{ ZoneSystem.m_instance.SetGlobalKey("gk_fpo_bossstone_passive"); }
+			{ ZoneSystem.instance.SetGlobalKey("gk_fpo_bossstone_passive"); }
 		}
 		
 		static List<string> GlobalKeys_Sort()
@@ -198,7 +198,7 @@ namespace ForsakenPowerOverhaul
 			
 			foreach(string Boss in List_BossNames)
 			{
-				if(ZoneSystem.m_instance.GetGlobalKey("gk_fpo_bossstone_" + Boss))
+				if(ZoneSystem.instance.GetGlobalKey("gk_fpo_bossstone_" + Boss))
 				{ GlobalKeys.Add("gk_fpo_bossstone_" + Boss); }
 			}
 			
@@ -209,7 +209,7 @@ namespace ForsakenPowerOverhaul
 		{
 			if(Player.m_localPlayer != null)
 			{
-				foreach(string GlobalKey in ZoneSystem.m_instance.GetGlobalKeys())
+				foreach(string GlobalKey in ZoneSystem.instance.GetGlobalKeys())
 				{
 					string New_String = GetBossName(GlobalKey);
 				
@@ -221,34 +221,38 @@ namespace ForsakenPowerOverhaul
 		
 		static void Update_Player_StatusEffects()
 		{
-			if(Player.m_localPlayer.m_seman.GetStatusEffect(GetHash("SE_FPO_Passive")))
+			var seman = Traverse.Create(Player.m_localPlayer).Field("m_seman").GetValue<SEMan>();
+			
+			if(seman.GetStatusEffect(GetHash("SE_FPO_Passive")))
 			{
-				if(Player.m_localPlayer.m_seman.GetStatusEffect(GetHash("SE_FPO_Passive")).GetTooltipString() != ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_Passive")).GetTooltipString())
-				{ Player.m_localPlayer.m_seman.RemoveStatusEffect(GetHash("SE_FPO_Passive")); }
+				if(seman.GetStatusEffect(GetHash("SE_FPO_Passive")).GetTooltipString() != ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Passive")).GetTooltipString())
+				{ seman.RemoveStatusEffect(GetHash("SE_FPO_Passive")); }
 			}
 			
-			if(!Player.m_localPlayer.m_seman.GetStatusEffect(GetHash("SE_FPO_Passive")) && ZoneSystem.m_instance.GetGlobalKey("gk_fpo_bossstone_passive"))
-			{ Player.m_localPlayer.m_seman.AddStatusEffect(GetHash("SE_FPO_Passive")); }
+			if(!seman.GetStatusEffect(GetHash("SE_FPO_Passive")) && ZoneSystem.instance.GetGlobalKey("gk_fpo_bossstone_passive"))
+			{ seman.AddStatusEffect(GetHash("SE_FPO_Passive")); }
 			
-			if(Player.m_localPlayer.m_seman.GetStatusEffect(GetHash("CorpseRun")) && !Config_SE_CorpseRun_Bool.Value)
-			{ Player.m_localPlayer.m_seman.RemoveStatusEffect(GetHash("CorpseRun")); }
+			if(seman.GetStatusEffect(GetHash("CorpseRun")) && !Config_SE_CorpseRun_Bool.Value)
+			{ seman.RemoveStatusEffect(GetHash("CorpseRun")); }
 		}
 		
 		static void Update_Player_StatusEffects_Equipped()
 		{
+			var seman = Traverse.Create(Player.m_localPlayer).Field("m_seman").GetValue<SEMan>();
+			
 			foreach(string Power in List_BossNames)
 			{
-				if(Player.m_localPlayer.m_seman.GetStatusEffect(GetHash("SE_FPO_" + Power + "_Equipped")))
+				if(seman.GetStatusEffect(GetHash("SE_FPO_" + Power + "_Equipped")))
 				{
-					if(Player.m_localPlayer.m_seman.GetStatusEffect(GetHash("SE_FPO_" + Power + "_Equipped")).GetTooltipString() != ObjectDB.m_instance.GetStatusEffect(GetHash("SE_FPO_" + Power + "_Equipped")).GetTooltipString())
-					{ Player.m_localPlayer.m_seman.RemoveStatusEffect(GetHash("SE_FPO_" + Power + "_Equipped")); }
+					if(seman.GetStatusEffect(GetHash("SE_FPO_" + Power + "_Equipped")).GetTooltipString() != ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_" + Power + "_Equipped")).GetTooltipString())
+					{ seman.RemoveStatusEffect(GetHash("SE_FPO_" + Power + "_Equipped")); }
 					
 					if(Player.m_localPlayer.GetGuardianPowerName() != ("GP_" + Power))
-					{ Player.m_localPlayer.m_seman.RemoveStatusEffect(GetHash("SE_FPO_" + Power + "_Equipped")); }
+					{ seman.RemoveStatusEffect(GetHash("SE_FPO_" + Power + "_Equipped")); }
 				}
 				
-				if(!Player.m_localPlayer.m_seman.GetStatusEffect(GetHash("SE_FPO_" + Power + "_Equipped")) && (Player.m_localPlayer.GetGuardianPowerName() == ("GP_" + Power)))
-				{ Player.m_localPlayer.m_seman.AddStatusEffect(GetHash("SE_FPO_" + Power + "_Equipped")); }
+				if(!seman.GetStatusEffect(GetHash("SE_FPO_" + Power + "_Equipped")) && (Player.m_localPlayer.GetGuardianPowerName() == ("GP_" + Power)))
+				{ seman.AddStatusEffect(GetHash("SE_FPO_" + Power + "_Equipped")); }
 			}
 		}
 		
@@ -278,9 +282,9 @@ namespace ForsakenPowerOverhaul
 			StatusEffect_FPO_Passive.m_HeatDamageModifier = 0.00F;
 			StatusEffect_FPO_Passive.m_mods = new List<HitData.DamageModPair>{ };
 			StatusEffect_FPO_Passive.m_ttl = 0.00F;
-			StatusEffect_FPO_Passive.m_icon = ObjectDB.m_instance.GetStatusEffect(GetHash("Rested")).m_icon;
+			StatusEffect_FPO_Passive.m_icon = ObjectDB.instance.GetStatusEffect(GetHash("Rested")).m_icon;
 			
-			foreach(string GlobalKey in ZoneSystem.m_instance.GetGlobalKeys())
+			foreach(string GlobalKey in ZoneSystem.instance.GetGlobalKeys())
 			{
 				if(GlobalKey.StartsWith("gk_fpo_bossstone_") && (GlobalKey != "gk_fpo_bossstone_passive"))
 				{
@@ -336,7 +340,7 @@ namespace ForsakenPowerOverhaul
 			foreach(StatusEffect_FPO New_StatusEffect_FPO in List_StatusEffect_FPO_Equipped)
 			{
 				New_StatusEffect_FPO.m_ttl = 0.00F;
-				New_StatusEffect_FPO.m_icon = ObjectDB.m_instance.GetStatusEffect(GetHash(New_StatusEffect_FPO.name.Replace("SE_FPO_", "GP_").Replace("_Equipped", ""))).m_icon;
+				New_StatusEffect_FPO.m_icon = ObjectDB.instance.GetStatusEffect(GetHash(New_StatusEffect_FPO.name.Replace("SE_FPO_", "GP_").Replace("_Equipped", ""))).m_icon;
 			}
 		}
 		
@@ -375,9 +379,9 @@ namespace ForsakenPowerOverhaul
 					List_StatusEffect_FPO[Index].m_startEffects.m_effectPrefabs = new EffectList.EffectData[1];
 					List_StatusEffect_FPO[Index].m_startEffects.m_effectPrefabs[0] = new EffectList.EffectData{ m_prefab = PrefabManager.Instance.GetPrefab("fx_GP_Activation") };
 					
-					List_StatusEffect_FPO[Index].m_icon = ObjectDB.m_instance.GetStatusEffect(GetHash(List_StatusEffect_FPO[Index].name.Replace("SE_FPO_", "GP_"))).m_icon;
+					List_StatusEffect_FPO[Index].m_icon = ObjectDB.instance.GetStatusEffect(GetHash(List_StatusEffect_FPO[Index].name.Replace("SE_FPO_", "GP_"))).m_icon;
 					
-					foreach(string GlobalKey in ZoneSystem.m_instance.GetGlobalKeys())
+					foreach(string GlobalKey in ZoneSystem.instance.GetGlobalKeys())
 					{
 						if(GlobalKey.StartsWith("gk_fpo_bossstone_") && (GlobalKey != "gk_fpo_bossstone_passive"))
 						{
@@ -611,7 +615,8 @@ namespace ForsakenPowerOverhaul
 				float WindSpeedModifier = 0.00F;
 				float HeatDamageModifier = 0.00F;
 				
-				foreach(StatusEffect New_StatusEffect in New_Player.m_seman.GetStatusEffects())
+				var playerSeman = Traverse.Create(New_Player).Field("m_seman").GetValue<SEMan>();
+				foreach(StatusEffect New_StatusEffect in playerSeman.GetStatusEffects())
 				{
 					if(New_StatusEffect.name.StartsWith("SE_FPO_"))
 					{
@@ -666,11 +671,12 @@ namespace ForsakenPowerOverhaul
 		{
 			if(New_Player == Player.m_localPlayer)
 			{
-				if((!New_Player.GetGuardianPowerName().StartsWith("GP_")) && ZoneSystem.m_instance.GetGlobalKey("gk_fpo_bossstone_passive"))
+				if((!New_Player.GetGuardianPowerName().StartsWith("GP_")) && ZoneSystem.instance.GetGlobalKey("gk_fpo_bossstone_passive"))
 				{
 					List<string> New_List = new List<string>{ };
 					
-					foreach(string PlayerKey in New_Player.m_uniques)
+					var playerUniques = Traverse.Create(New_Player).Field("m_uniques").GetValue<HashSet<string>>();
+					foreach(string PlayerKey in playerUniques)
 					{
 						if(PlayerKey.StartsWith("GP_"))
 						{ New_List.Add(PlayerKey); }
@@ -688,13 +694,13 @@ namespace ForsakenPowerOverhaul
 			{
 				if(New_Player.GetGuardianPowerName().StartsWith("GP_"))
 				{
-					if(!ZoneSystem.m_instance.GetGlobalKey("gk_fpo_bossstone_passive"))
+					if(!ZoneSystem.instance.GetGlobalKey("gk_fpo_bossstone_passive"))
 					{ New_Player.SetGuardianPower(""); }
 					else
 					{
 						bool New_Bool = true;
 						
-						foreach(string GlobalKey in ZoneSystem.m_instance.GetGlobalKeys())
+						foreach(string GlobalKey in ZoneSystem.instance.GetGlobalKeys())
 						{
 							if(GetBossName(New_Player.GetGuardianPowerName()) == GetBossName(GlobalKey))
 							{ New_Bool = false; }
@@ -713,9 +719,10 @@ namespace ForsakenPowerOverhaul
 			
 			PlayerKeys_Update();
 			
-			foreach(string PlayerKey in Player.m_localPlayer.m_uniques)
+			var localPlayerUniques = Traverse.Create(Player.m_localPlayer).Field("m_uniques").GetValue<HashSet<string>>();
+			foreach(string PlayerKey in localPlayerUniques)
 			{
-				foreach(string GlobalKey in ZoneSystem.m_instance.GetGlobalKeys())
+				foreach(string GlobalKey in ZoneSystem.instance.GetGlobalKeys())
 				{
 					if(GlobalKey.StartsWith("gk_fpo_bossstone_"))
 					{

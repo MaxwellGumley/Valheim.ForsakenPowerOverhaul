@@ -1,0 +1,87 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <AssemblyName>ForsakenPowerOverhaul</AssemblyName>
+    <RootNamespace>ForsakenPowerOverhaul</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <!-- Hard-coded Valheim installation path -->
+    <ValheimInstall>C:\Program Files (x86)\Steam\steamapps\common\Valheim</ValheimInstall>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Compile Include="Source\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="UnityEngine">
+      <HintPath>$(ValheimInstall)\valheim_Data\Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(ValheimInstall)\valheim_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(ValheimInstall)\valheim_Data\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="assembly_valheim">
+      <HintPath>$(ValheimInstall)\valheim_Data\Managed\assembly_valheim.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>$(ValheimInstall)\BepInEx\core\BepInEx.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="0Harmony">
+      <HintPath>$(ValheimInstall)\BepInEx\core\0Harmony.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Jotunn">
+      <HintPath>$(ValheimInstall)\BepInEx\plugins\Libraries\Jotunn\Jotunn.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>$(ValheimInstall)\valheim_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Validate Valheim installation before build -->
+  <Target Name="ValidateValheimInstall" BeforeTargets="BeforeCompile">
+    <Error Condition="!Exists('$(ValheimInstall)')" 
+           Text="Valheim installation directory not found at: $(ValheimInstall). Please verify the ValheimInstall property in the project file." />
+    <Error Condition="!Exists('$(ValheimInstall)\valheim_Data\Managed\assembly_valheim.dll')" 
+           Text="Valheim assembly_valheim.dll not found at: $(ValheimInstall)\valheim_Data\Managed\assembly_valheim.dll" />
+    <Error Condition="!Exists('$(ValheimInstall)\BepInEx\core\BepInEx.dll')" 
+           Text="BepInEx.dll not found at: $(ValheimInstall)\BepInEx\core\BepInEx.dll. Make sure BepInEx is installed." />
+    <Error Condition="!Exists('$(ValheimInstall)\BepInEx\plugins\Libraries\Jotunn\Jotunn.dll')" 
+           Text="Jotunn.dll not found at: $(ValheimInstall)\BepInEx\plugins\Libraries\Jotunn\Jotunn.dll. Make sure Jotunn is installed." />
+    <Message Text="Valheim installation validated at: $(ValheimInstall)" Importance="high" />
+  </Target>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Copy SourceFiles="$(OutDir)$(AssemblyName).dll" 
+          DestinationFolder="$(ValheimInstall)\BepInEx\plugins\ForsakenPowerOverhaul\" 
+          ContinueOnError="false" />
+    <Message Text="Copied $(AssemblyName).dll to Valheim plugins folder" Importance="high" />
+  </Target>
+
+</Project>
