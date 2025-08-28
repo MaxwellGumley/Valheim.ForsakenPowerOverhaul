@@ -5,6 +5,7 @@ using Jotunn.Managers;
 using Jotunn.Utils;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace ForsakenPowerOverhaul
@@ -18,6 +19,22 @@ namespace ForsakenPowerOverhaul
 		const string PluginGUID = "JuneGame.Valheim.ForsakenPowerOverhaul";
 		const string PluginName = "Forsaken Power Overhaul";
 		const string PluginVersion = "2.1.1";
+		
+		// Cached field accessors for performance
+		private static FieldInfo PlayerSemanField;
+		private static FieldInfo PlayerUniquesField;
+		private static FieldInfo PlayerEquipmentModifierValuesField;
+		private static FieldInfo PlayerFoodRegenTimerField;
+		private static FieldInfo PlayerGuardianSEField;
+		private static FieldInfo HumanoidRightItemField;
+		private static FieldInfo HumanoidLeftItemField;
+		private static FieldInfo HumanoidChestItemField;
+		private static FieldInfo HumanoidLegItemField;
+		private static FieldInfo HumanoidHelmetItemField;
+		private static FieldInfo HumanoidShoulderItemField;
+		private static FieldInfo HumanoidUtilityItemField;
+		private static FieldInfo ShipPlayersField;
+		private static FieldInfo TextsDialogTextsField;
 		
 		static List<string> List_BossNames = new List<string>{ "Eikthyr", "TheElder", "Bonemass", "Moder", "Yagluth", "Queen", "Fader" };
 		static List<string> List_Components = new List<string>{ "Passive", "Equipped", "Active", "Shared" };
@@ -33,6 +50,10 @@ namespace ForsakenPowerOverhaul
 		
 		void Awake()
 		{
+			// Initialize cached field accessors for performance
+			InitializeFieldAccessors();
+			InitializePatchFieldAccessors();
+			
 			Add_ConfigEntries();
 			Add_Buttons();
 			Add_StatusEffects();
@@ -43,6 +64,40 @@ namespace ForsakenPowerOverhaul
 			
 			PrefabManager.OnVanillaPrefabsAvailable += Add_Prefabs;
 		}
+		
+		private static void InitializeFieldAccessors()
+		{
+			PlayerSemanField = AccessTools.Field(typeof(Character), "m_seman");
+			PlayerUniquesField = AccessTools.Field(typeof(Player), "m_uniques");
+			PlayerEquipmentModifierValuesField = AccessTools.Field(typeof(Player), "m_equipmentModifierValues");
+			PlayerFoodRegenTimerField = AccessTools.Field(typeof(Player), "m_foodRegenTimer");
+			PlayerGuardianSEField = AccessTools.Field(typeof(Player), "m_guardianSE");
+			HumanoidRightItemField = AccessTools.Field(typeof(Humanoid), "m_rightItem");
+			HumanoidLeftItemField = AccessTools.Field(typeof(Humanoid), "m_leftItem");
+			HumanoidChestItemField = AccessTools.Field(typeof(Humanoid), "m_chestItem");
+			HumanoidLegItemField = AccessTools.Field(typeof(Humanoid), "m_legItem");
+			HumanoidHelmetItemField = AccessTools.Field(typeof(Humanoid), "m_helmetItem");
+			HumanoidShoulderItemField = AccessTools.Field(typeof(Humanoid), "m_shoulderItem");
+			HumanoidUtilityItemField = AccessTools.Field(typeof(Humanoid), "m_utilityItem");
+			ShipPlayersField = AccessTools.Field(typeof(Ship), "m_players");
+			TextsDialogTextsField = AccessTools.Field(typeof(TextsDialog), "m_texts");
+		}
+		
+		// High-performance field access helpers
+		private static SEMan GetSEMan(Character character) => (SEMan)PlayerSemanField.GetValue(character);
+		private static HashSet<string> GetPlayerUniques(Player player) => (HashSet<string>)PlayerUniquesField.GetValue(player);
+		private static float GetFoodRegenTimer(Player player) => (float)PlayerFoodRegenTimerField.GetValue(player);
+		private static object GetGuardianSE(Player player) => PlayerGuardianSEField.GetValue(player);
+		private static object GetEquipmentModifierValues(Player player) => PlayerEquipmentModifierValuesField.GetValue(player);
+		private static ItemDrop.ItemData GetRightItem(Humanoid humanoid) => (ItemDrop.ItemData)HumanoidRightItemField.GetValue(humanoid);
+		private static ItemDrop.ItemData GetLeftItem(Humanoid humanoid) => (ItemDrop.ItemData)HumanoidLeftItemField.GetValue(humanoid);
+		private static ItemDrop.ItemData GetChestItem(Humanoid humanoid) => (ItemDrop.ItemData)HumanoidChestItemField.GetValue(humanoid);
+		private static ItemDrop.ItemData GetLegItem(Humanoid humanoid) => (ItemDrop.ItemData)HumanoidLegItemField.GetValue(humanoid);
+		private static ItemDrop.ItemData GetHelmetItem(Humanoid humanoid) => (ItemDrop.ItemData)HumanoidHelmetItemField.GetValue(humanoid);
+		private static ItemDrop.ItemData GetShoulderItem(Humanoid humanoid) => (ItemDrop.ItemData)HumanoidShoulderItemField.GetValue(humanoid);
+		private static ItemDrop.ItemData GetUtilityItem(Humanoid humanoid) => (ItemDrop.ItemData)HumanoidUtilityItemField.GetValue(humanoid);
+		private static List<Player> GetShipPlayers(Ship ship) => (List<Player>)ShipPlayersField.GetValue(ship);
+		private static List<TextsDialog.TextInfo> GetTextsDialogTexts(TextsDialog dialog) => (List<TextsDialog.TextInfo>)TextsDialogTextsField.GetValue(dialog);
 		
 		void Start()
 		{
@@ -221,7 +276,7 @@ namespace ForsakenPowerOverhaul
 		
 		static void Update_Player_StatusEffects()
 		{
-			var seman = Traverse.Create(Player.m_localPlayer).Field("m_seman").GetValue<SEMan>();
+			var seman = GetSEMan(Player.m_localPlayer);
 			
 			if(seman.GetStatusEffect(GetHash("SE_FPO_Passive")))
 			{
@@ -238,7 +293,7 @@ namespace ForsakenPowerOverhaul
 		
 		static void Update_Player_StatusEffects_Equipped()
 		{
-			var seman = Traverse.Create(Player.m_localPlayer).Field("m_seman").GetValue<SEMan>();
+			var seman = GetSEMan(Player.m_localPlayer);
 			
 			foreach(string Power in List_BossNames)
 			{
@@ -615,7 +670,7 @@ namespace ForsakenPowerOverhaul
 				float WindSpeedModifier = 0.00F;
 				float HeatDamageModifier = 0.00F;
 				
-				var playerSeman = Traverse.Create(New_Player).Field("m_seman").GetValue<SEMan>();
+				var playerSeman = GetSEMan(New_Player);
 				foreach(StatusEffect New_StatusEffect in playerSeman.GetStatusEffects())
 				{
 					if(New_StatusEffect.name.StartsWith("SE_FPO_"))
@@ -675,7 +730,7 @@ namespace ForsakenPowerOverhaul
 				{
 					List<string> New_List = new List<string>{ };
 					
-					var playerUniques = Traverse.Create(New_Player).Field("m_uniques").GetValue<HashSet<string>>();
+					var playerUniques = GetPlayerUniques(New_Player);
 					foreach(string PlayerKey in playerUniques)
 					{
 						if(PlayerKey.StartsWith("GP_"))
@@ -719,7 +774,7 @@ namespace ForsakenPowerOverhaul
 			
 			PlayerKeys_Update();
 			
-			var localPlayerUniques = Traverse.Create(Player.m_localPlayer).Field("m_uniques").GetValue<HashSet<string>>();
+			var localPlayerUniques = GetPlayerUniques(Player.m_localPlayer);
 			foreach(string PlayerKey in localPlayerUniques)
 			{
 				foreach(string GlobalKey in ZoneSystem.instance.GetGlobalKeys())

@@ -2,6 +2,7 @@ using BepInEx;
 using HarmonyLib;
 using HarmonyLib.Tools;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using UnityEngine;
 
@@ -9,6 +10,21 @@ namespace ForsakenPowerOverhaul
 {
 	partial class ForsakenPowerOverhaul : BaseUnityPlugin
 	{
+		// Additional cached field accessors for Patches.cs
+		private static FieldInfo EquipmentMovementField;
+		private static FieldInfo EquipmentFireField;
+
+		// Initialize additional field accessors for Patches.cs
+		private static void InitializePatchFieldAccessors()
+		{
+			// Equipment modifier fields need to be found dynamically based on the equipment type
+			var equipmentModType = PlayerEquipmentModifierValuesField?.FieldType;
+			if (equipmentModType != null)
+			{
+				EquipmentMovementField = AccessTools.Field(equipmentModType, "m_movement");
+				EquipmentFireField = AccessTools.Field(equipmentModType, "m_fire");
+			}
+		}
 		[HarmonyPatch(typeof(BossStone), "Start")]
 		class Patch_BossStone_Start
 		{
@@ -115,11 +131,11 @@ namespace ForsakenPowerOverhaul
 					if(__instance.m_guardianPowerCooldown > 0.00F)
 					{ __result = false; }
 					
-					var guardianSE = Traverse.Create(__instance).Field("m_guardianSE").GetValue();
+					var guardianSE = GetGuardianSE(__instance);
 					if(guardianSE == null)
 					{ __result = false; }
 					
-					var seman = Traverse.Create(__instance).Field("m_seman").GetValue<SEMan>();
+					var seman = GetSEMan(__instance);
 					if(seman.GetStatusEffect(GetHash(__instance.GetGuardianPowerName().Replace("GP_", "SE_FPO_"))))
 					{ seman.RemoveStatusEffect(GetHash(__instance.GetGuardianPowerName().Replace("GP_", "SE_FPO_"))); }
 					
@@ -166,14 +182,14 @@ namespace ForsakenPowerOverhaul
 			{
 				if(__instance != null)
 				{
-					var foodRegenTimer = Traverse.Create(__instance).Field("m_foodRegenTimer").GetValue<float>();
+					var foodRegenTimer = GetFoodRegenTimer(__instance);
 					if(foodRegenTimer == 0.00F)
 					{
 						float HealthRegen = 0.00F;
 						HealthRegen += Update_Player_BaseStats("HealthRegen", __instance);
 						
 						float regenMultiplier = 1.00F;
-						var seman = Traverse.Create(__instance).Field("m_seman").GetValue<SEMan>();
+						var seman = GetSEMan(__instance);
 						seman.ModifyHealthRegen(ref regenMultiplier);
 						
 						__instance.Heal(HealthRegen * regenMultiplier);
@@ -231,66 +247,65 @@ namespace ForsakenPowerOverhaul
 						EquipmentSpeedModifier = (EquipmentSpeedModifier < -1.00F) ? -1.00F : EquipmentSpeedModifier;
 						EquipmentSpeedModifier = 1.00F + EquipmentSpeedModifier;
 						
-						var equipmentModValues = Traverse.Create(__instance).Field("m_equipmentModifierValues").GetValue();
-						var rightItem = Traverse.Create(__instance).Field("m_rightItem").GetValue<ItemDrop.ItemData>();
-						var leftItem = Traverse.Create(__instance).Field("m_leftItem").GetValue<ItemDrop.ItemData>();
-						var chestItem = Traverse.Create(__instance).Field("m_chestItem").GetValue<ItemDrop.ItemData>();
-						var legItem = Traverse.Create(__instance).Field("m_legItem").GetValue<ItemDrop.ItemData>();
-						var helmetItem = Traverse.Create(__instance).Field("m_helmetItem").GetValue<ItemDrop.ItemData>();
-						var shoulderItem = Traverse.Create(__instance).Field("m_shoulderItem").GetValue<ItemDrop.ItemData>();
-						var utilityItem = Traverse.Create(__instance).Field("m_utilityItem").GetValue<ItemDrop.ItemData>();
+						var equipmentModValues = GetEquipmentModifierValues(__instance);
+						var rightItem = GetRightItem(__instance);
+						var leftItem = GetLeftItem(__instance);
+						var chestItem = GetChestItem(__instance);
+						var legItem = GetLegItem(__instance);
+						var helmetItem = GetHelmetItem(__instance);
+						var shoulderItem = GetShoulderItem(__instance);
+						var utilityItem = GetUtilityItem(__instance);
 						
 						// Reset equipment modifier value
-						var movementField = Traverse.Create(equipmentModValues).Field("m_movement");
-						movementField.SetValue(0.00F);
+						EquipmentMovementField?.SetValue(equipmentModValues, 0.00F);
 						
 						if(rightItem != null)
 						{ 
-							float currentVal = movementField.GetValue<float>();
+							float currentVal = (float)(EquipmentMovementField?.GetValue(equipmentModValues) ?? 0f);
 							float modifier = (rightItem.m_shared.m_movementModifier < 0.00F) ? (rightItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : rightItem.m_shared.m_movementModifier;
-							movementField.SetValue(currentVal + modifier);
+							EquipmentMovementField?.SetValue(equipmentModValues, currentVal + modifier);
 						}
 						
 						if(leftItem != null)
 						{ 
-							float currentVal = movementField.GetValue<float>();
+							float currentVal = (float)(EquipmentMovementField?.GetValue(equipmentModValues) ?? 0f);
 							float modifier = (leftItem.m_shared.m_movementModifier < 0.00F) ? (leftItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : leftItem.m_shared.m_movementModifier;
-							movementField.SetValue(currentVal + modifier);
+							EquipmentMovementField?.SetValue(equipmentModValues, currentVal + modifier);
 						}
 						
 						if(chestItem != null)
 						{ 
-							float currentVal = movementField.GetValue<float>();
+							float currentVal = (float)(EquipmentMovementField?.GetValue(equipmentModValues) ?? 0f);
 							float modifier = (chestItem.m_shared.m_movementModifier < 0.00F) ? (chestItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : chestItem.m_shared.m_movementModifier;
-							movementField.SetValue(currentVal + modifier);
+							EquipmentMovementField?.SetValue(equipmentModValues, currentVal + modifier);
 						}
 						
 						if(legItem != null)
 						{ 
-							float currentVal = movementField.GetValue<float>();
+							float currentVal = (float)(EquipmentMovementField?.GetValue(equipmentModValues) ?? 0f);
 							float modifier = (legItem.m_shared.m_movementModifier < 0.00F) ? (legItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : legItem.m_shared.m_movementModifier;
-							movementField.SetValue(currentVal + modifier);
+							EquipmentMovementField?.SetValue(equipmentModValues, currentVal + modifier);
 						}
 						
 						if(helmetItem != null)
 						{ 
-							float currentVal = movementField.GetValue<float>();
+							float currentVal = (float)(EquipmentMovementField?.GetValue(equipmentModValues) ?? 0f);
 							float modifier = (helmetItem.m_shared.m_movementModifier < 0.00F) ? (helmetItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : helmetItem.m_shared.m_movementModifier;
-							movementField.SetValue(currentVal + modifier);
+							EquipmentMovementField?.SetValue(equipmentModValues, currentVal + modifier);
 						}
 						
 						if(shoulderItem != null)
 						{ 
-							float currentVal = movementField.GetValue<float>();
+							float currentVal = (float)(EquipmentMovementField?.GetValue(equipmentModValues) ?? 0f);
 							float modifier = (shoulderItem.m_shared.m_movementModifier < 0.00F) ? (shoulderItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : shoulderItem.m_shared.m_movementModifier;
-							movementField.SetValue(currentVal + modifier);
+							EquipmentMovementField?.SetValue(equipmentModValues, currentVal + modifier);
 						}
 						
 						if(utilityItem != null)
 						{ 
-							float currentVal = movementField.GetValue<float>();
+							float currentVal = (float)(EquipmentMovementField?.GetValue(equipmentModValues) ?? 0f);
 							float modifier = (utilityItem.m_shared.m_movementModifier < 0.00F) ? (utilityItem.m_shared.m_movementModifier * EquipmentSpeedModifier) : utilityItem.m_shared.m_movementModifier;
-							movementField.SetValue(currentVal + modifier);
+							EquipmentMovementField?.SetValue(equipmentModValues, currentVal + modifier);
 						}
 					}
 				}
@@ -307,17 +322,16 @@ namespace ForsakenPowerOverhaul
 					float HeatDamageModifier = 0.00F;
 					HeatDamageModifier += Update_Player_BaseStats("HeatDamageModifier", __instance);
 					
-					// Access equipment modifier values through Traverse
-					var equipmentModValues = Traverse.Create(__instance).Field("m_equipmentModifierValues").GetValue();
+					// Access equipment modifier values through cached field accessor
+					var equipmentModValues = GetEquipmentModifierValues(__instance);
 					if (equipmentModValues != null)
 					{
-						var modifiersField = Traverse.Create(equipmentModValues).Field("m_fire");
-						float currentFire = modifiersField.GetValue<float>();
-						modifiersField.SetValue(currentFire - HeatDamageModifier);
+						float currentFire = (float)(EquipmentFireField?.GetValue(equipmentModValues) ?? 0f);
+						EquipmentFireField?.SetValue(equipmentModValues, currentFire - HeatDamageModifier);
 						
 						// Clamp to max 1.0
-						float newValue = modifiersField.GetValue<float>();
-						if (newValue > 1.00F) modifiersField.SetValue(1.00F);
+						float newValue = (float)(EquipmentFireField?.GetValue(equipmentModValues) ?? 0f);
+						if (newValue > 1.00F) EquipmentFireField?.SetValue(equipmentModValues, 1.00F);
 					}
 				}
 			}
@@ -359,7 +373,7 @@ namespace ForsakenPowerOverhaul
 					{
 						float WindSpeedModifier = 0.00F;
 						
-						var shipPlayers = Traverse.Create(__instance).Field("m_players").GetValue<List<Player>>();
+						var shipPlayers = GetShipPlayers(__instance);
 						foreach(Player New_Player in shipPlayers)
 						{ WindSpeedModifier += Update_Player_BaseStats("WindSpeedModifier", New_Player); }
 						
@@ -414,7 +428,7 @@ namespace ForsakenPowerOverhaul
 						{ New_StringBuilder_FPO.Append(GetBossStoneHoverText(New_String, false)); }
 					}
 					
-					var textsList = Traverse.Create(__instance).Field("m_texts").GetValue<List<TextsDialog.TextInfo>>();
+					var textsList = GetTextsDialogTexts(__instance);
 					textsList.RemoveAt(0);
 					textsList.Insert(0, new TextsDialog.TextInfo(GetLocalization("$inventory_activeeffects"), GetLocalization(New_StringBuilder)));
 					textsList.Insert(1, new TextsDialog.TextInfo(GetLocalization("$ui_fpo"), GetLocalization(New_StringBuilder_FPO)));
