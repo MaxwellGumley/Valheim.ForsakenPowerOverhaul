@@ -77,11 +77,4 @@
     <Message Text="Valheim installation validated at: $(ValheimInstall)" Importance="high" />
   </Target>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Copy SourceFiles="$(OutDir)$(AssemblyName).dll" 
-          DestinationFolder="$(ValheimInstall)\BepInEx\plugins\ForsakenPowerOverhaul\" 
-          ContinueOnError="false" />
-    <Message Text="Copied $(AssemblyName).dll to Valheim plugins folder" Importance="high" />
-  </Target>
-
 </Project>
