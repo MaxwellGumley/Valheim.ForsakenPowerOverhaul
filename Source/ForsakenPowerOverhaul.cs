@@ -18,7 +18,7 @@ namespace ForsakenPowerOverhaul
 	{
 		const string PluginGUID = "Tidalwave.Valheim.ForsakenPowerOverhaul";
 		const string PluginName = "Forsaken Power Overhaul";
-		const string PluginVersion = "2.1.1";
+		const string PluginVersion = "1.0";
 		
 		// Cached field accessors for performance
 		private static FieldInfo PlayerSemanField;
