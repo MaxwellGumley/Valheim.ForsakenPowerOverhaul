@@ -1,5 +1,6 @@
 using BepInEx;
 using BepInEx.Bootstrap;
+using BepInEx.Logging;
 using HarmonyLib;
 using Jotunn.Managers;
 using Jotunn.Utils;
@@ -19,6 +20,9 @@ namespace ForsakenPowerOverhaul
 		const string PluginGUID = "Tidalwave.Valheim.ForsakenPowerOverhaul";
 		const string PluginName = "Forsaken Power Overhaul";
 		const string PluginVersion = "1.0";
+		
+		public static ForsakenPowerOverhaul instance;
+		public static ManualLogSource log;
 		
 		// Cached field accessors for performance
 		private static FieldInfo PlayerSemanField;
@@ -50,6 +54,11 @@ namespace ForsakenPowerOverhaul
 		
 		void Awake()
 		{
+			instance = this;
+			log = Logger;
+			
+			log.LogInfo("ForsakenPowerOverhaul loaded successfully!");
+			
 			// Initialize cached field accessors for performance
 			InitializeFieldAccessors();
 			InitializePatchFieldAccessors();

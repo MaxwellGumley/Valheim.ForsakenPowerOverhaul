@@ -2,6 +2,7 @@
 using Jotunn.Managers;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace ForsakenPowerOverhaul
 {
@@ -9,6 +10,8 @@ namespace ForsakenPowerOverhaul
 	{
 		static void Add_Translations()
 		{
+			ForsakenPowerOverhaul.log?.LogInfo("[FPO] Adding translations");
+			
 			LocalizationManager.Instance.GetLocalization().AddTranslation("English", new Dictionary<string, string>
 			{
 				{ "ui_fpo", "Forsaken Power Overhaul" },
@@ -38,14 +41,65 @@ namespace ForsakenPowerOverhaul
 		
 		static string GetLocalization(string New_String)
 		{
-			// Simplified for compilation - returns the key as-is 
-			// TODO: Implement proper localization in runtime
+			// Get the localized string from Jotunn's LocalizationManager
+			// If LocalizationManager is not available or key not found, return the key as fallback
+			if (LocalizationManager.Instance == null)
+			{
+				ForsakenPowerOverhaul.log?.LogWarning($"[FPO] LocalizationManager.Instance is null, returning key: {New_String}");
+				return New_String;
+			}
+			
+			var localization = LocalizationManager.Instance.GetLocalization();
+			if (localization == null)
+			{
+				ForsakenPowerOverhaul.log?.LogWarning($"[FPO] GetLocalization() returned null, returning key: {New_String}");
+				return New_String;
+			}
+			
+			// Use regex to find and replace all $tokens in the string
+			if (New_String.Contains("$"))
+			{
+				// Pattern to match $followed by word characters (letters, numbers, underscores)
+				string pattern = @"\$([a-zA-Z_][a-zA-Z0-9_]*)";
+				bool allTranslated = true;
+				
+				string result = Regex.Replace(New_String, pattern, match =>
+				{
+					string token = match.Value; // The full $token
+					string translated = localization.TryTranslate(token);
+					
+					if (string.IsNullOrEmpty(translated) || translated.Equals(token))
+					{
+						ForsakenPowerOverhaul.log?.LogWarning($"[FPO] Translation not found for key: {token}");
+						allTranslated = false;
+						return token; // Return original token if translation failed
+					}
+					else
+					{
+						return translated;
+					}
+				});
+				
+				if (allTranslated)
+				{
+					ForsakenPowerOverhaul.log?.LogInfo($"[FPO] Successfully translated '{New_String}' to '{result}'");
+				}
+				else
+				{
+					ForsakenPowerOverhaul.log?.LogWarning($"[FPO] Partially translated '{New_String}' to '{result}'");
+				}
+				return result;
+			}
+			
+			// If no $ tokens, return as-is (might be plain text)
+			ForsakenPowerOverhaul.log?.LogInfo($"[FPO] No translation tokens found in: {New_String}");
 			return New_String;
 		}
 		
 		static string GetLocalization(StringBuilder New_StringBuilder)
 		{
-			return New_StringBuilder.ToString();
+			// Convert StringBuilder to string and get localization
+			return GetLocalization(New_StringBuilder.ToString());
 		}
 	}
 }
