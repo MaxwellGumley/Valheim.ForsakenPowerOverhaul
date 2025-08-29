@@ -21,8 +21,14 @@ namespace ForsakenPowerOverhaul
 		const string PluginName = "Forsaken Power Overhaul";
 		const string PluginVersion = "1.0";
 		
+		// Update timing constants
+		private const float STATUS_EFFECT_UPDATE_INTERVAL = 0.2f; // Seconds between expensive updates
+		
 		public static ForsakenPowerOverhaul instance;
 		public static ManualLogSource log;
+		
+		// Update timing fields
+		private float lastStatusEffectUpdate = 0f;
 		
 		// Cached field accessors for performance
 		private static FieldInfo PlayerSemanField;
@@ -118,16 +124,33 @@ namespace ForsakenPowerOverhaul
 		{
 			if(ObjectDB.instance != null)
 			{
+				// Check if we need to do expensive status effect updates
+				bool needsStatusEffectUpdate = false;
+				float currentTime = Time.time;
+				
+				if (currentTime - lastStatusEffectUpdate >= STATUS_EFFECT_UPDATE_INTERVAL)
+				{
+					needsStatusEffectUpdate = true;
+					lastStatusEffectUpdate = currentTime;
+				}
+				
 				if(StatusEffect_FPO_Passive == null)
-				{ Add_StatusEffectLists(); }
+				{ 
+					Add_StatusEffectLists(); 
+				}
 				
 				if(Player.m_localPlayer != null)
 				{
 					if(!Player.m_localPlayer.IsDead())
 					{
-						Update_Player_StatusEffects();
-						Update_Player_StatusEffects_Equipped();
+						// Only run expensive updates periodically
+						if (needsStatusEffectUpdate)
+						{
+							Update_Player_StatusEffects();
+							Update_Player_StatusEffects_Equipped();
+						}
 						
+						// Input handling runs every frame for responsiveness
 						if(UnityEngine.Input.inputString.Length > 0)
 						{
 							if(ButtonConfig_PowerCycle != null && ConfigEntry_PowerCycle_Bool.Value)
