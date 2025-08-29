@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
@@ -6,6 +7,9 @@ namespace ForsakenPowerOverhaul
 {
 	partial class ForsakenPowerOverhaul : BaseUnityPlugin
 	{
+		// Cache for boss stone hover text to improve performance
+		private static Dictionary<string, string> bossStoneHoverTextCache = new Dictionary<string, string>();
+		
 		class BossStone_FPO : MonoBehaviour
 		{
 			public void Update_BossStones()
@@ -23,6 +27,15 @@ namespace ForsakenPowerOverhaul
 		
 		static string GetBossStoneHoverText(string New_String, bool New_Bool)
 		{
+			// Create cache key that includes both parameters
+			string cacheKey = $"{New_String}_{New_Bool}";
+			
+			// Check if we already have the result cached
+			if (bossStoneHoverTextCache.TryGetValue(cacheKey, out string cachedResult))
+			{
+				return cachedResult;
+			}
+			
 			StringBuilder New_StringBuilder = new StringBuilder(256);
 			
 			if(New_String != "")
@@ -49,7 +62,12 @@ namespace ForsakenPowerOverhaul
 				{ New_StringBuilder.Append("	\n	\n"); }
 			}
 			
-			return New_StringBuilder.ToString();
+			string result = New_StringBuilder.ToString();
+			
+			// Cache the result for future use
+			bossStoneHoverTextCache[cacheKey] = result;
+			
+			return result;
 		}
 	}
 }

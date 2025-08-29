@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using Jotunn.Managers;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -8,6 +9,9 @@ namespace ForsakenPowerOverhaul
 {
 	partial class ForsakenPowerOverhaul : BaseUnityPlugin
 	{
+		// Cache for localization results to improve performance
+		private static Dictionary<string, string> localizationCache = new Dictionary<string, string>();
+		
 		static void Add_Translations()
 		{
 			ForsakenPowerOverhaul.log?.LogInfo("[FPO] Adding translations");
@@ -41,20 +45,20 @@ namespace ForsakenPowerOverhaul
 		
 		static string GetLocalization(string New_String)
 		{
-			// Get the localized string from Jotunn's LocalizationManager
-			// If LocalizationManager is not available or key not found, return the key as fallback
-			if (LocalizationManager.Instance == null)
+			// Check cache first
+			if (localizationCache.TryGetValue(New_String, out string cachedResult))
 			{
-				ForsakenPowerOverhaul.log?.LogWarning($"[FPO] LocalizationManager.Instance is null, returning key: {New_String}");
-				return New_String;
+				return cachedResult;
 			}
 			
+			// Get the localized string from Jotunn's LocalizationManager
+			// These should never be null if the mod is properly initialized
+			Trace.Assert(LocalizationManager.Instance != null, "[FPO] LocalizationManager.Instance is null - mod initialization failed");
+			Trace.Assert(LocalizationManager.Instance.GetLocalization() != null, "[FPO] GetLocalization() returned null - localization system not initialized");
+			
 			var localization = LocalizationManager.Instance.GetLocalization();
-			if (localization == null)
-			{
-				ForsakenPowerOverhaul.log?.LogWarning($"[FPO] GetLocalization() returned null, returning key: {New_String}");
-				return New_String;
-			}
+			
+			string result;
 			
 			// Use regex to find and replace all $tokens in the string
 			if (New_String.Contains("$"))
@@ -63,7 +67,7 @@ namespace ForsakenPowerOverhaul
 				string pattern = @"\$([a-zA-Z_][a-zA-Z0-9_]*)";
 				bool allTranslated = true;
 				
-				string result = Regex.Replace(New_String, pattern, match =>
+				result = Regex.Replace(New_String, pattern, match =>
 				{
 					string token = match.Value; // The full $token
 					string translated = localization.TryTranslate(token);
@@ -88,12 +92,17 @@ namespace ForsakenPowerOverhaul
 				{
 					ForsakenPowerOverhaul.log?.LogWarning($"[FPO] Partially translated '{New_String}' to '{result}'");
 				}
-				return result;
+			}
+			else
+			{
+				// If no $ tokens, return as-is (might be plain text)
+				ForsakenPowerOverhaul.log?.LogInfo($"[FPO] No translation tokens found in: {New_String}");
+				result = New_String;
 			}
 			
-			// If no $ tokens, return as-is (might be plain text)
-			ForsakenPowerOverhaul.log?.LogInfo($"[FPO] No translation tokens found in: {New_String}");
-			return New_String;
+			// Cache the result
+			localizationCache[New_String] = result;
+			return result;
 		}
 		
 		static string GetLocalization(StringBuilder New_StringBuilder)
