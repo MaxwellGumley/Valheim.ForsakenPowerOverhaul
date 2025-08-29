@@ -123,31 +123,14 @@ namespace ForsakenPowerOverhaul
 		void Update()
 		{
 			if(ObjectDB.instance == null) { return; }
-			
-			// Check if we need to do expensive status effect updates
-			bool needsStatusEffectUpdate = false;
-			float currentTime = Time.time;
-			
-			if (currentTime - lastStatusEffectUpdate >= STATUS_EFFECT_UPDATE_INTERVAL)
-			{
-				needsStatusEffectUpdate = true;
-				lastStatusEffectUpdate = currentTime;
-			}
-			
+		
 			if(StatusEffect_FPO_Passive == null)
 			{ 
 				Add_StatusEffectLists(); 
 			}
 			
 			if(Player.m_localPlayer == null || Player.m_localPlayer.IsDead()) { return; }
-			
-			// Only run expensive updates periodically
-			if (needsStatusEffectUpdate)
-			{
-				Update_Player_StatusEffects();
-				Update_Player_StatusEffects_Equipped();
-			}
-			
+					
 			// Input handling runs every frame for responsiveness
 			if (UnityEngine.Input.inputString.Length > 0 &&
 				ButtonConfig_PowerCycle != null &&
@@ -156,6 +139,14 @@ namespace ForsakenPowerOverhaul
 				Player.m_localPlayer.GetGuardianPowerName().StartsWith("GP_"))
 			{
 				Power_Cycle();
+			}
+
+			// Only run expensive updates periodically
+			if (currentTime - lastStatusEffectUpdate >= STATUS_EFFECT_UPDATE_INTERVAL)
+			{
+				Update_Player_StatusEffects();
+				Update_Player_StatusEffects_Equipped();
+				lastStatusEffectUpdate = currentTime;
 			}
 		}
 		
