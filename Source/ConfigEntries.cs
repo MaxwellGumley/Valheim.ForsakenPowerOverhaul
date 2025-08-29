@@ -39,6 +39,10 @@ namespace ForsakenPowerOverhaul
 		static ConfigEntry<float> ConfigEntry_Eikthyr_Passive_FallDamageModifier;
 		static ConfigEntry<string> ConfigEntry_Eikthyr_Passive_IncomingDamageTypes;
 		static ConfigEntry<string> ConfigEntry_Eikthyr_Passive_IncomingDamageModifiers;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Passive_IncomingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Passive_IncomingDamageMultiplierModifiers;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Passive_OutgoingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Passive_OutgoingDamageMultiplierModifiers;
 		static ConfigEntry<float> ConfigEntry_Eikthyr_Passive_HeatDamageModifier;
 		
 		static ConfigEntry<int> ConfigEntry_Eikthyr_Active_MaxHealth;
@@ -64,6 +68,10 @@ namespace ForsakenPowerOverhaul
 		static ConfigEntry<float> ConfigEntry_Eikthyr_Active_FallDamageModifier;
 		static ConfigEntry<string> ConfigEntry_Eikthyr_Active_IncomingDamageTypes;
 		static ConfigEntry<string> ConfigEntry_Eikthyr_Active_IncomingDamageModifiers;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Active_IncomingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Active_IncomingDamageMultiplierModifiers;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Active_OutgoingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Active_OutgoingDamageMultiplierModifiers;
 		static ConfigEntry<float> ConfigEntry_Eikthyr_Active_HeatDamageModifier;
 		
 		static ConfigEntry<int> ConfigEntry_Eikthyr_Shared_MaxHealth;
@@ -89,6 +97,10 @@ namespace ForsakenPowerOverhaul
 		static ConfigEntry<float> ConfigEntry_Eikthyr_Shared_FallDamageModifier;
 		static ConfigEntry<string> ConfigEntry_Eikthyr_Shared_IncomingDamageTypes;
 		static ConfigEntry<string> ConfigEntry_Eikthyr_Shared_IncomingDamageModifiers;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Shared_IncomingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Shared_IncomingDamageMultiplierModifiers;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Shared_OutgoingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Shared_OutgoingDamageMultiplierModifiers;
 		static ConfigEntry<float> ConfigEntry_Eikthyr_Shared_HeatDamageModifier;
 		
 		static ConfigEntry<int> ConfigEntry_Eikthyr_Equipped_MaxHealth;
@@ -114,6 +126,10 @@ namespace ForsakenPowerOverhaul
 		static ConfigEntry<float> ConfigEntry_Eikthyr_Equipped_FallDamageModifier;
 		static ConfigEntry<string> ConfigEntry_Eikthyr_Equipped_IncomingDamageTypes;
 		static ConfigEntry<string> ConfigEntry_Eikthyr_Equipped_IncomingDamageModifiers;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Equipped_IncomingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Equipped_IncomingDamageMultiplierModifiers;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Equipped_OutgoingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_Eikthyr_Equipped_OutgoingDamageMultiplierModifiers;
 		static ConfigEntry<float> ConfigEntry_Eikthyr_Equipped_HeatDamageModifier;
 		
 		//TheElder
@@ -140,6 +156,10 @@ namespace ForsakenPowerOverhaul
 		static ConfigEntry<float> ConfigEntry_TheElder_Passive_FallDamageModifier;
 		static ConfigEntry<string> ConfigEntry_TheElder_Passive_IncomingDamageTypes;
 		static ConfigEntry<string> ConfigEntry_TheElder_Passive_IncomingDamageModifiers;
+		static ConfigEntry<string> ConfigEntry_TheElder_Passive_IncomingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_TheElder_Passive_IncomingDamageMultiplierModifiers;
+		static ConfigEntry<string> ConfigEntry_TheElder_Passive_OutgoingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_TheElder_Passive_OutgoingDamageMultiplierModifiers;
 		static ConfigEntry<float> ConfigEntry_TheElder_Passive_HeatDamageModifier;
 		
 		static ConfigEntry<int> ConfigEntry_TheElder_Active_MaxHealth;
@@ -165,6 +185,10 @@ namespace ForsakenPowerOverhaul
 		static ConfigEntry<float> ConfigEntry_TheElder_Active_FallDamageModifier;
 		static ConfigEntry<string> ConfigEntry_TheElder_Active_IncomingDamageTypes;
 		static ConfigEntry<string> ConfigEntry_TheElder_Active_IncomingDamageModifiers;
+		static ConfigEntry<string> ConfigEntry_TheElder_Active_IncomingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_TheElder_Active_IncomingDamageMultiplierModifiers;
+		static ConfigEntry<string> ConfigEntry_TheElder_Active_OutgoingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_TheElder_Active_OutgoingDamageMultiplierModifiers;
 		static ConfigEntry<float> ConfigEntry_TheElder_Active_HeatDamageModifier;
 		
 		static ConfigEntry<int> ConfigEntry_TheElder_Shared_MaxHealth;
@@ -190,6 +214,10 @@ namespace ForsakenPowerOverhaul
 		static ConfigEntry<float> ConfigEntry_TheElder_Shared_FallDamageModifier;
 		static ConfigEntry<string> ConfigEntry_TheElder_Shared_IncomingDamageTypes;
 		static ConfigEntry<string> ConfigEntry_TheElder_Shared_IncomingDamageModifiers;
+		static ConfigEntry<string> ConfigEntry_TheElder_Shared_IncomingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_TheElder_Shared_IncomingDamageMultiplierModifiers;
+		static ConfigEntry<string> ConfigEntry_TheElder_Shared_OutgoingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_TheElder_Shared_OutgoingDamageMultiplierModifiers;
 		static ConfigEntry<float> ConfigEntry_TheElder_Shared_HeatDamageModifier;
 		
 		static ConfigEntry<int> ConfigEntry_TheElder_Equipped_MaxHealth;
@@ -215,6 +243,10 @@ namespace ForsakenPowerOverhaul
 		static ConfigEntry<float> ConfigEntry_TheElder_Equipped_FallDamageModifier;
 		static ConfigEntry<string> ConfigEntry_TheElder_Equipped_IncomingDamageTypes;
 		static ConfigEntry<string> ConfigEntry_TheElder_Equipped_IncomingDamageModifiers;
+		static ConfigEntry<string> ConfigEntry_TheElder_Equipped_IncomingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_TheElder_Equipped_IncomingDamageMultiplierModifiers;
+		static ConfigEntry<string> ConfigEntry_TheElder_Equipped_OutgoingDamageMultiplierTypes;
+		static ConfigEntry<string> ConfigEntry_TheElder_Equipped_OutgoingDamageMultiplierModifiers;
 		static ConfigEntry<float> ConfigEntry_TheElder_Equipped_HeatDamageModifier;
 		
 		//Bonemass
@@ -753,6 +785,10 @@ namespace ForsakenPowerOverhaul
 			string String_Key_HeatDamageModifier = "HeatDamageModifier";
 			string String_Key_IncomingDamageTypes = "IncomingDamageTypes";
 			string String_Key_IncomingDamageModifiers = "IncomingDamageModifiers";
+			string String_Key_IncomingDamageMultiplierTypes = "IncomingDamageMultiplierTypes";
+			string String_Key_IncomingDamageMultiplierModifiers = "IncomingDamageMultiplierModifiers";
+			string String_Key_OutgoingDamageMultiplierTypes = "OutgoingDamageMultiplierTypes";
+			string String_Key_OutgoingDamageMultiplierModifiers = "OutgoingDamageMultiplierModifiers";
 			
 			string String_Value_FloatIncrease = "A value of \"12.34\" translates to a 12.34% Increase.";
 			string String_Value_FloatDecrease = "A value of \"12.34\" translates to a 12.34% Decrease.";
@@ -760,6 +796,10 @@ namespace ForsakenPowerOverhaul
 			string String_Value_OutgoingDamageTypes = "Acceptable Values: [All, Unarmed, Clubs, Axes, Knives, Spears, Swords, Polearms, Bows, Crossbows, ElementalMagic, BloodMagic, WoodCutting, Pickaxes].";
 			string String_Value_IncomingDamageTypes = "Acceptable Values: [Physical, Pierce, Slash, Blunt, Elemental, Lightning, Poison, Frost, Fire, Spirit, Chop, Pickaxe].";
 			string String_Value_IncomingDamageModifiers = "Acceptable Values: [0, 25, 50, 100, 150, 200] (0 = Immune, 25 = Very Resistant, 50 = Resistant, 100 = Neutral, 150 = Weak, 200 = Very Weak).";
+			string String_Value_IncomingDamageMultiplierTypes = "Acceptable Values: [Physical, Pierce, Slash, Blunt, Elemental, Lightning, Poison, Frost, Fire, Spirit, Chop, Pickaxe, All].";
+			string String_Value_IncomingDamageMultiplierModifiers = "Acceptable Values: Any percentage (e.g., 90.0 = 10% damage reduction, 110.0 = 10% damage increase).";
+			string String_Value_OutgoingDamageMultiplierTypes = "Acceptable Values: [All, Unarmed, Clubs, Axes, Knives, Spears, Swords, Polearms, Bows, Crossbows, ElementalMagic, BloodMagic, WoodCutting, Pickaxes].";
+			string String_Value_OutgoingDamageMultiplierModifiers = "Acceptable Values: Any percentage (e.g., 110.0 = 10% damage increase, 90.0 = 10% damage reduction).";
 			string String_Value_Multiple = "Multiple Values Acceptable with Format: \"ValueA,ValueB,ValueC\".";
 			
 			string String_ModPriority = "This Config may take priority over most mods.";
@@ -798,6 +838,10 @@ namespace ForsakenPowerOverhaul
 			ConfigDescription ConfigDescription_HeatDamageModifier = new ConfigDescription(("Decrease Heat Damage by Value Percent.\n" + String_Value_FloatDecrease), null, Config_AdminOnly);
 			ConfigDescription ConfigDescription_IncomingDamageTypes = new ConfigDescription(("Modify Incoming Damage Types.\n" + String_Value_IncomingDamageTypes + "\n" + String_Value_Multiple), null, Config_AdminOnly);
 			ConfigDescription ConfigDescription_IncomingDamageModifiers = new ConfigDescription(("Modify Incoming Damage Types by Value Percent.\n" + String_Value_IncomingDamageModifiers + "\n" + String_Value_Multiple), null, Config_AdminOnly);
+			ConfigDescription ConfigDescription_IncomingDamageMultiplierTypes = new ConfigDescription(("Apply Additional Damage Multipliers to Incoming Damage Types.\n" + String_Value_IncomingDamageMultiplierTypes + "\n" + String_Value_Multiple), null, Config_AdminOnly);
+			ConfigDescription ConfigDescription_IncomingDamageMultiplierModifiers = new ConfigDescription(("Apply Additional Damage Multipliers by Percentage.\n" + String_Value_IncomingDamageMultiplierModifiers + "\n" + String_Value_Multiple), null, Config_AdminOnly);
+			ConfigDescription ConfigDescription_OutgoingDamageMultiplierTypes = new ConfigDescription(("Apply Additional Damage Multipliers to Outgoing Damage Types.\n" + String_Value_OutgoingDamageMultiplierTypes + "\n" + String_Value_Multiple), null, Config_AdminOnly);
+			ConfigDescription ConfigDescription_OutgoingDamageMultiplierModifiers = new ConfigDescription(("Apply Additional Damage Multipliers by Percentage.\n" + String_Value_OutgoingDamageMultiplierModifiers + "\n" + String_Value_Multiple), null, Config_AdminOnly);
 			
 			ConfigDescription ConfigDescription_ExtraCorpseRun =  new ConfigDescription(("Corpse Run from Tombstones.\n" + String_GameBalance), null, Config_AdminOnly);
 			
@@ -845,6 +889,10 @@ namespace ForsakenPowerOverhaul
 					Dictionary_ConfigEntry_Float["ConfigEntry_" + Power + "_" + Component + "_HeatDamageModifier"] = Config.Bind(String_Section, String_Key_HeatDamageModifier, 0.00F, ConfigDescription_HeatDamageModifier);
 					Dictionary_ConfigEntry_String["ConfigEntry_" + Power + "_" + Component + "_IncomingDamageTypes"] = Config.Bind(String_Section, String_Key_IncomingDamageTypes, "", ConfigDescription_IncomingDamageTypes);
 					Dictionary_ConfigEntry_String["ConfigEntry_" + Power + "_" + Component + "_IncomingDamageModifiers"] = Config.Bind(String_Section, String_Key_IncomingDamageModifiers, "", ConfigDescription_IncomingDamageModifiers);
+					Dictionary_ConfigEntry_String["ConfigEntry_" + Power + "_" + Component + "_IncomingDamageMultiplierTypes"] = Config.Bind(String_Section, String_Key_IncomingDamageMultiplierTypes, "", ConfigDescription_IncomingDamageMultiplierTypes);
+					Dictionary_ConfigEntry_String["ConfigEntry_" + Power + "_" + Component + "_IncomingDamageMultiplierModifiers"] = Config.Bind(String_Section, String_Key_IncomingDamageMultiplierModifiers, "", ConfigDescription_IncomingDamageMultiplierModifiers);
+					Dictionary_ConfigEntry_String["ConfigEntry_" + Power + "_" + Component + "_OutgoingDamageMultiplierTypes"] = Config.Bind(String_Section, String_Key_OutgoingDamageMultiplierTypes, "", ConfigDescription_OutgoingDamageMultiplierTypes);
+					Dictionary_ConfigEntry_String["ConfigEntry_" + Power + "_" + Component + "_OutgoingDamageMultiplierModifiers"] = Config.Bind(String_Section, String_Key_OutgoingDamageMultiplierModifiers, "", ConfigDescription_OutgoingDamageMultiplierModifiers);
 				}
 			}
 			
@@ -914,6 +962,10 @@ namespace ForsakenPowerOverhaul
 							New_StatusEffect_FPO.m_fallDamageModifier = 0.00F - (Dictionary_ConfigEntry_Float["ConfigEntry_" + Boss + "_" + Component + "_FallDamageModifier"].Value / 100.00F);
 							New_StatusEffect_FPO.m_HeatDamageModifier = 0.00F - (Dictionary_ConfigEntry_Float["ConfigEntry_" + Boss + "_" + Component + "_HeatDamageModifier"].Value / 100.00F);
 							New_StatusEffect_FPO.m_mods = GetIncomingDamages(Dictionary_ConfigEntry_String["ConfigEntry_" + Boss + "_" + Component + "_IncomingDamageTypes"].Value, Dictionary_ConfigEntry_String["ConfigEntry_" + Boss + "_" + Component + "_IncomingDamageModifiers"].Value);
+							New_StatusEffect_FPO.m_IncomingDamageMultiplierTypes = GetIncomingDamageMultiplierTypes(Dictionary_ConfigEntry_String["ConfigEntry_" + Boss + "_" + Component + "_IncomingDamageMultiplierTypes"].Value, Dictionary_ConfigEntry_String["ConfigEntry_" + Boss + "_" + Component + "_IncomingDamageMultiplierModifiers"].Value, out List<float> IncomingMultiplierMods);
+							New_StatusEffect_FPO.m_IncomingDamageMultiplierModifiers = IncomingMultiplierMods;
+							New_StatusEffect_FPO.m_OutgoingDamageMultiplierTypes = GetOutgoingDamageMultiplierTypes(Dictionary_ConfigEntry_String["ConfigEntry_" + Boss + "_" + Component + "_OutgoingDamageMultiplierTypes"].Value, Dictionary_ConfigEntry_String["ConfigEntry_" + Boss + "_" + Component + "_OutgoingDamageMultiplierModifiers"].Value, out List<float> OutgoingMultiplierMods);
+							New_StatusEffect_FPO.m_OutgoingDamageMultiplierModifiers = OutgoingMultiplierMods;
 						}
 					}
 				}
@@ -1134,6 +1186,10 @@ namespace ForsakenPowerOverhaul
 						New_StatusEffect_FPO.m_fallDamageModifier = 0.00F;
 						New_StatusEffect_FPO.m_HeatDamageModifier = 0.00F;
 						New_StatusEffect_FPO.m_mods = new List<HitData.DamageModPair>{ };
+						New_StatusEffect_FPO.m_IncomingDamageMultiplierTypes = new List<HitData.DamageType>{ };
+						New_StatusEffect_FPO.m_IncomingDamageMultiplierModifiers = new List<float>{ };
+						New_StatusEffect_FPO.m_OutgoingDamageMultiplierTypes = new List<Skills.SkillType>{ };
+						New_StatusEffect_FPO.m_OutgoingDamageMultiplierModifiers = new List<float>{ };
 					}
 				}
 			}

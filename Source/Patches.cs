@@ -435,5 +435,141 @@ namespace ForsakenPowerOverhaul
 				}
 			}
 		}
+		
+		/// <summary>
+		/// Patch to apply incoming damage multipliers after Epic Loot and built-in resistance systems
+		/// </summary>
+		[HarmonyPatch(typeof(Character), "RPC_Damage")]
+		[HarmonyAfter("randyknapp.mods.epicloot")]
+		class Patch_Character_RPC_Damage_IncomingMultipliers
+		{
+			static void Prefix(Character __instance, HitData hit)
+			{
+				if (__instance is Player player)
+				{
+					// Apply incoming damage multipliers to each damage type
+					hit.m_damage.m_fire *= DamageMultiplierCache.GetIncomingDamageMultiplier(player, HitData.DamageType.Fire);
+					hit.m_damage.m_frost *= DamageMultiplierCache.GetIncomingDamageMultiplier(player, HitData.DamageType.Frost);
+					hit.m_damage.m_lightning *= DamageMultiplierCache.GetIncomingDamageMultiplier(player, HitData.DamageType.Lightning);
+					hit.m_damage.m_poison *= DamageMultiplierCache.GetIncomingDamageMultiplier(player, HitData.DamageType.Poison);
+					hit.m_damage.m_spirit *= DamageMultiplierCache.GetIncomingDamageMultiplier(player, HitData.DamageType.Spirit);
+					hit.m_damage.m_blunt *= DamageMultiplierCache.GetIncomingDamageMultiplier(player, HitData.DamageType.Blunt);
+					hit.m_damage.m_slash *= DamageMultiplierCache.GetIncomingDamageMultiplier(player, HitData.DamageType.Slash);
+					hit.m_damage.m_pierce *= DamageMultiplierCache.GetIncomingDamageMultiplier(player, HitData.DamageType.Pierce);
+					hit.m_damage.m_chop *= DamageMultiplierCache.GetIncomingDamageMultiplier(player, HitData.DamageType.Chop);
+					hit.m_damage.m_pickaxe *= DamageMultiplierCache.GetIncomingDamageMultiplier(player, HitData.DamageType.Pickaxe);
+					
+					// Apply physical damage multiplier to all physical types if specified
+					float physicalMultiplier = DamageMultiplierCache.GetIncomingDamageMultiplier(player, HitData.DamageType.Physical);
+					if (physicalMultiplier != 1.0f)
+					{
+						hit.m_damage.m_blunt *= physicalMultiplier;
+						hit.m_damage.m_slash *= physicalMultiplier;
+						hit.m_damage.m_pierce *= physicalMultiplier;
+					}
+					
+					// Apply elemental damage multiplier to all elemental types if specified
+					float elementalMultiplier = DamageMultiplierCache.GetIncomingDamageMultiplier(player, HitData.DamageType.Elemental);
+					if (elementalMultiplier != 1.0f)
+					{
+						hit.m_damage.m_fire *= elementalMultiplier;
+						hit.m_damage.m_frost *= elementalMultiplier;
+						hit.m_damage.m_lightning *= elementalMultiplier;
+						hit.m_damage.m_poison *= elementalMultiplier;
+						hit.m_damage.m_spirit *= elementalMultiplier;
+					}
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Patch to apply outgoing damage multipliers when player attacks
+		/// </summary>
+		[HarmonyPatch(typeof(Character), "Damage")]
+		[HarmonyAfter("randyknapp.mods.epicloot")]
+		class Patch_Character_Damage_OutgoingMultipliers
+		{
+			static void Prefix(Character __instance, HitData hit)
+			{
+				if (__instance is Player player && hit != null)
+				{
+					// Try to determine the skill type from the hit data or equipped weapon
+					Skills.SkillType skillType = GetSkillTypeFromHit(player, hit);
+					
+					if (skillType != Skills.SkillType.None)
+					{
+						// Apply outgoing damage multiplier
+						float multiplier = DamageMultiplierCache.GetOutgoingDamageMultiplier(player, skillType);
+						if (multiplier != 1.0f)
+						{
+							hit.m_damage.Modify(multiplier);
+						}
+						
+						// Also check for "All" skill type multiplier
+						float allMultiplier = DamageMultiplierCache.GetOutgoingDamageMultiplier(player, Skills.SkillType.All);
+						if (allMultiplier != 1.0f)
+						{
+							hit.m_damage.Modify(allMultiplier);
+						}
+					}
+				}
+			}
+			
+			/// <summary>
+			/// Determine skill type from hit data or equipped weapon
+			/// </summary>
+			private static Skills.SkillType GetSkillTypeFromHit(Player player, HitData hit)
+			{
+				// Try to get skill type from hit data
+				if (hit.m_skill != Skills.SkillType.None)
+				{
+					return hit.m_skill;
+				}
+				
+				// Fall back to equipped weapon skill type
+				var rightItem = GetRightItem(player);
+				if (rightItem?.m_shared?.m_skillType != null)
+				{
+					return rightItem.m_shared.m_skillType;
+				}
+				
+				// Default to unarmed if no weapon
+				return Skills.SkillType.Unarmed;
+			}
+		}
+		
+		/// <summary>
+		/// Patch to invalidate cache when status effects change
+		/// </summary>
+		[HarmonyPatch(typeof(SEMan), "AddStatusEffect", new System.Type[] { typeof(StatusEffect), typeof(bool), typeof(int), typeof(float) })]
+		class Patch_SEMan_AddStatusEffect_InvalidateCache
+		{
+			static void Postfix(SEMan __instance, StatusEffect statusEffect)
+			{
+				// Use reflection to get the character field from SEMan
+				var characterField = AccessTools.Field(typeof(SEMan), "m_character");
+				if (characterField?.GetValue(__instance) is Player player && statusEffect is StatusEffect_FPO)
+				{
+					DamageMultiplierCache.Reset(player);
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Patch to invalidate cache when status effects are removed
+		/// </summary>
+		[HarmonyPatch(typeof(SEMan), "RemoveStatusEffect", new System.Type[] { typeof(StatusEffect), typeof(bool) })]
+		class Patch_SEMan_RemoveStatusEffect_InvalidateCache
+		{
+			static void Postfix(SEMan __instance, StatusEffect statusEffect)
+			{
+				// Use reflection to get the character field from SEMan
+				var characterField = AccessTools.Field(typeof(SEMan), "m_character");
+				if (characterField?.GetValue(__instance) is Player player && statusEffect is StatusEffect_FPO)
+				{
+					DamageMultiplierCache.Reset(player);
+				}
+			}
+		}
 	}
 }

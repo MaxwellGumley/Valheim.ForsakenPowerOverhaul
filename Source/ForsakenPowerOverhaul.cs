@@ -142,6 +142,7 @@ namespace ForsakenPowerOverhaul
 			}
 
 			// Only run expensive updates periodically
+			float currentTime = Time.time;
 			if (currentTime - lastStatusEffectUpdate >= STATUS_EFFECT_UPDATE_INTERVAL)
 			{
 				Update_Player_StatusEffects();
@@ -351,6 +352,11 @@ namespace ForsakenPowerOverhaul
 			StatusEffect_FPO_Passive.m_fallDamageModifier = 0.00F;
 			StatusEffect_FPO_Passive.m_HeatDamageModifier = 0.00F;
 			StatusEffect_FPO_Passive.m_mods = new List<HitData.DamageModPair>{ };
+			// Reset multiplier fields
+			StatusEffect_FPO_Passive.m_IncomingDamageMultiplierTypes = new List<HitData.DamageType>{ };
+			StatusEffect_FPO_Passive.m_IncomingDamageMultiplierModifiers = new List<float>{ };
+			StatusEffect_FPO_Passive.m_OutgoingDamageMultiplierTypes = new List<Skills.SkillType>{ };
+			StatusEffect_FPO_Passive.m_OutgoingDamageMultiplierModifiers = new List<float>{ };
 			StatusEffect_FPO_Passive.m_ttl = 0.00F;
 			StatusEffect_FPO_Passive.m_icon = ObjectDB.instance.GetStatusEffect(GetHash("Rested")).m_icon;
 			
@@ -396,6 +402,11 @@ namespace ForsakenPowerOverhaul
 						StatusEffect_FPO_Passive.m_fallDamageModifier += New_StatusEffect_FPO.m_fallDamageModifier;
 						StatusEffect_FPO_Passive.m_HeatDamageModifier += New_StatusEffect_FPO.m_HeatDamageModifier;
 						StatusEffect_FPO_Passive.m_mods = IncomingDamage_Concat(StatusEffect_FPO_Passive.m_mods.ToList(), New_StatusEffect_FPO.m_mods.ToList());
+						// Combine multiplier attributes
+						StatusEffect_FPO_Passive.m_IncomingDamageMultiplierTypes = MultiplierDamage_Concat(StatusEffect_FPO_Passive.m_IncomingDamageMultiplierTypes.ToList(), New_StatusEffect_FPO.m_IncomingDamageMultiplierTypes.ToList(), StatusEffect_FPO_Passive.m_IncomingDamageMultiplierModifiers.ToList(), New_StatusEffect_FPO.m_IncomingDamageMultiplierModifiers.ToList(), out List<float> m_IncomingDamageMultiplierModifiers);
+						StatusEffect_FPO_Passive.m_IncomingDamageMultiplierModifiers = m_IncomingDamageMultiplierModifiers;
+						StatusEffect_FPO_Passive.m_OutgoingDamageMultiplierTypes = MultiplierDamage_Concat(StatusEffect_FPO_Passive.m_OutgoingDamageMultiplierTypes.ToList(), New_StatusEffect_FPO.m_OutgoingDamageMultiplierTypes.ToList(), StatusEffect_FPO_Passive.m_OutgoingDamageMultiplierModifiers.ToList(), New_StatusEffect_FPO.m_OutgoingDamageMultiplierModifiers.ToList(), out List<float> m_OutgoingDamageMultiplierModifiers);
+						StatusEffect_FPO_Passive.m_OutgoingDamageMultiplierModifiers = m_OutgoingDamageMultiplierModifiers;
 					}
 				}
 			}
@@ -403,6 +414,11 @@ namespace ForsakenPowerOverhaul
 			StatusEffect_FPO_Passive.m_OutgoingDamageTypes = OutgoingDamage_Sort(StatusEffect_FPO_Passive.m_OutgoingDamageTypes.ToList(), StatusEffect_FPO_Passive.m_OutgoingDamageModifiers.ToList(), out List<float> New_List);
 			StatusEffect_FPO_Passive.m_OutgoingDamageModifiers = New_List;
 			StatusEffect_FPO_Passive.m_mods = IncomingDamage_Sort(StatusEffect_FPO_Passive.m_mods.ToList());
+			// Sort multiplier attributes
+			StatusEffect_FPO_Passive.m_IncomingDamageMultiplierTypes = MultiplierDamage_Sort(StatusEffect_FPO_Passive.m_IncomingDamageMultiplierTypes.ToList(), StatusEffect_FPO_Passive.m_IncomingDamageMultiplierModifiers.ToList(), out List<float> New_IncomingMultiplierList);
+			StatusEffect_FPO_Passive.m_IncomingDamageMultiplierModifiers = New_IncomingMultiplierList;
+			StatusEffect_FPO_Passive.m_OutgoingDamageMultiplierTypes = MultiplierDamage_Sort(StatusEffect_FPO_Passive.m_OutgoingDamageMultiplierTypes.ToList(), StatusEffect_FPO_Passive.m_OutgoingDamageMultiplierModifiers.ToList(), out List<float> New_OutgoingMultiplierList);
+			StatusEffect_FPO_Passive.m_OutgoingDamageMultiplierModifiers = New_OutgoingMultiplierList;
 		}
 		
 		static void Update_Equipped_Stats()
@@ -443,6 +459,11 @@ namespace ForsakenPowerOverhaul
 					List_StatusEffect_FPO[Index].m_fallDamageModifier = List_StatusEffect_FPO_Active[Index].m_fallDamageModifier;
 					List_StatusEffect_FPO[Index].m_HeatDamageModifier = List_StatusEffect_FPO_Active[Index].m_HeatDamageModifier;
 					List_StatusEffect_FPO[Index].m_mods = List_StatusEffect_FPO_Active[Index].m_mods.ToList();
+					// Copy multiplier fields from active stats
+					List_StatusEffect_FPO[Index].m_IncomingDamageMultiplierTypes = List_StatusEffect_FPO_Active[Index].m_IncomingDamageMultiplierTypes.ToList();
+					List_StatusEffect_FPO[Index].m_IncomingDamageMultiplierModifiers = List_StatusEffect_FPO_Active[Index].m_IncomingDamageMultiplierModifiers.ToList();
+					List_StatusEffect_FPO[Index].m_OutgoingDamageMultiplierTypes = List_StatusEffect_FPO_Active[Index].m_OutgoingDamageMultiplierTypes.ToList();
+					List_StatusEffect_FPO[Index].m_OutgoingDamageMultiplierModifiers = List_StatusEffect_FPO_Active[Index].m_OutgoingDamageMultiplierModifiers.ToList();
 					
 					List_StatusEffect_FPO[Index].m_ttl = ConfigEntry_General_GuardianPower_ActiveDuration.Value;
 					
@@ -493,6 +514,11 @@ namespace ForsakenPowerOverhaul
 								List_StatusEffect_FPO[Index].m_fallDamageModifier += New_StatusEffect_FPO.m_fallDamageModifier;
 								List_StatusEffect_FPO[Index].m_HeatDamageModifier += New_StatusEffect_FPO.m_HeatDamageModifier;
 								List_StatusEffect_FPO[Index].m_mods = IncomingDamage_Concat(List_StatusEffect_FPO[Index].m_mods.ToList(), New_StatusEffect_FPO.m_mods.ToList());
+								// Combine multiplier attributes from shared stats
+								List_StatusEffect_FPO[Index].m_IncomingDamageMultiplierTypes = MultiplierDamage_Concat(List_StatusEffect_FPO[Index].m_IncomingDamageMultiplierTypes.ToList(), New_StatusEffect_FPO.m_IncomingDamageMultiplierTypes.ToList(), List_StatusEffect_FPO[Index].m_IncomingDamageMultiplierModifiers.ToList(), New_StatusEffect_FPO.m_IncomingDamageMultiplierModifiers.ToList(), out List<float> m_IncomingDamageMultiplierModifiers);
+								List_StatusEffect_FPO[Index].m_IncomingDamageMultiplierModifiers = m_IncomingDamageMultiplierModifiers;
+								List_StatusEffect_FPO[Index].m_OutgoingDamageMultiplierTypes = MultiplierDamage_Concat(List_StatusEffect_FPO[Index].m_OutgoingDamageMultiplierTypes.ToList(), New_StatusEffect_FPO.m_OutgoingDamageMultiplierTypes.ToList(), List_StatusEffect_FPO[Index].m_OutgoingDamageMultiplierModifiers.ToList(), New_StatusEffect_FPO.m_OutgoingDamageMultiplierModifiers.ToList(), out List<float> m_OutgoingDamageMultiplierModifiers);
+								List_StatusEffect_FPO[Index].m_OutgoingDamageMultiplierModifiers = m_OutgoingDamageMultiplierModifiers;
 							}
 						}
 					}
@@ -500,6 +526,11 @@ namespace ForsakenPowerOverhaul
 					List_StatusEffect_FPO[Index].m_OutgoingDamageTypes = OutgoingDamage_Sort(List_StatusEffect_FPO[Index].m_OutgoingDamageTypes.ToList(), List_StatusEffect_FPO[Index].m_OutgoingDamageModifiers.ToList(), out List<float> New_List);
 					List_StatusEffect_FPO[Index].m_OutgoingDamageModifiers = New_List;
 					List_StatusEffect_FPO[Index].m_mods = IncomingDamage_Sort(List_StatusEffect_FPO[Index].m_mods.ToList());
+					// Sort multiplier attributes for active stats
+					List_StatusEffect_FPO[Index].m_IncomingDamageMultiplierTypes = MultiplierDamage_Sort(List_StatusEffect_FPO[Index].m_IncomingDamageMultiplierTypes.ToList(), List_StatusEffect_FPO[Index].m_IncomingDamageMultiplierModifiers.ToList(), out List<float> New_IncomingMultiplierList);
+					List_StatusEffect_FPO[Index].m_IncomingDamageMultiplierModifiers = New_IncomingMultiplierList;
+					List_StatusEffect_FPO[Index].m_OutgoingDamageMultiplierTypes = MultiplierDamage_Sort(List_StatusEffect_FPO[Index].m_OutgoingDamageMultiplierTypes.ToList(), List_StatusEffect_FPO[Index].m_OutgoingDamageMultiplierModifiers.ToList(), out List<float> New_OutgoingMultiplierList);
+					List_StatusEffect_FPO[Index].m_OutgoingDamageMultiplierModifiers = New_OutgoingMultiplierList;
 				}
 			}
 		}
@@ -671,6 +702,174 @@ namespace ForsakenPowerOverhaul
 			}
 			
 			return new HitData.DamageModPair{ };
+		}
+		
+		static List<HitData.DamageType> MultiplierDamage_Concat(List<HitData.DamageType> Type, List<HitData.DamageType> TypeAdd, List<float> Modifier, List<float> ModifierAdd, out List<float> m_DamageMultiplierModifiers)
+		{
+			List<HitData.DamageType> New_TypeAdd = new List<HitData.DamageType>{ };
+			List<float> New_ModifierAdd = new List<float>{ };
+			
+			foreach(HitData.DamageType New_DamageTypeAdd in TypeAdd)
+			{
+				bool New_Bool = true;
+				int Index = 0;
+				
+				foreach(HitData.DamageType New_DamageType in Type)
+				{
+					if(New_DamageTypeAdd == New_DamageType)
+					{
+						New_Bool = false;
+						Index = Type.IndexOf(New_DamageType);
+					}
+				}
+				
+				if(New_Bool)
+				{
+					New_TypeAdd.Add(New_DamageTypeAdd);
+					New_ModifierAdd.Add(ModifierAdd[TypeAdd.IndexOf(New_DamageTypeAdd)]);
+				}
+				else
+				{ Modifier[Index] *= ModifierAdd[TypeAdd.IndexOf(New_DamageTypeAdd)]; } // Multiply for percentage-based multipliers
+			}
+			
+			m_DamageMultiplierModifiers = Modifier.Concat(New_ModifierAdd).ToList();
+			return Type.Concat(New_TypeAdd).ToList();
+		}
+		
+		static List<HitData.DamageType> MultiplierDamage_Sort(List<HitData.DamageType> List_Type, List<float> List_Modifier, out List<float> List_Sort)
+		{
+			List<HitData.DamageType> New_List_Type = new List<HitData.DamageType>{ };
+			List<float> New_List_Modifier = new List<float>{ };
+			int Index;
+			
+			List<HitData.DamageType> New_DamageTypes = new List<HitData.DamageType>
+			{
+				HitData.DamageType.Physical,
+				HitData.DamageType.Pierce,
+				HitData.DamageType.Slash,
+				HitData.DamageType.Blunt,
+				HitData.DamageType.Elemental,
+				HitData.DamageType.Lightning,
+				HitData.DamageType.Poison,
+				HitData.DamageType.Frost,
+				HitData.DamageType.Fire,
+				HitData.DamageType.Spirit,
+				HitData.DamageType.Chop,
+				HitData.DamageType.Pickaxe
+			};
+			
+			foreach(HitData.DamageType New_DamageType in New_DamageTypes)
+			{
+				if(MultiplierDamage_Sort_Loop(List_Type.ToList(), New_DamageType, out Index))
+				{
+					New_List_Type.Add(List_Type[Index]);
+					New_List_Modifier.Add(List_Modifier[Index]);
+				}
+			}
+			
+			List_Sort = New_List_Modifier;
+			return New_List_Type;
+		}
+		
+		static bool MultiplierDamage_Sort_Loop(List<HitData.DamageType> List, HitData.DamageType DamageType_Sort, out int Index)
+		{
+			Index = 0;
+			
+			foreach(HitData.DamageType New_DamageType in List)
+			{
+				if(New_DamageType == DamageType_Sort)
+				{
+					Index = List.IndexOf(New_DamageType);
+					return true;
+				}
+			}
+			
+			return false;
+		}
+
+		// Overloaded methods for Skills.SkillType
+		static List<Skills.SkillType> MultiplierDamage_Concat(List<Skills.SkillType> Type, List<Skills.SkillType> TypeAdd, List<float> Modifier, List<float> ModifierAdd, out List<float> m_DamageMultiplierModifiers)
+		{
+			List<Skills.SkillType> New_TypeAdd = new List<Skills.SkillType>{ };
+			List<float> New_ModifierAdd = new List<float>{ };
+			
+			foreach(Skills.SkillType New_SkillTypeAdd in TypeAdd)
+			{
+				bool New_Bool = true;
+				int Index = 0;
+				
+				foreach(Skills.SkillType New_SkillType in Type)
+				{
+					if(New_SkillTypeAdd == New_SkillType)
+					{
+						New_Bool = false;
+						Index = Type.IndexOf(New_SkillType);
+					}
+				}
+				
+				if(New_Bool)
+				{
+					New_TypeAdd.Add(New_SkillTypeAdd);
+					New_ModifierAdd.Add(ModifierAdd[TypeAdd.IndexOf(New_SkillTypeAdd)]);
+				}
+				else
+				{ Modifier[Index] *= ModifierAdd[TypeAdd.IndexOf(New_SkillTypeAdd)]; } // Multiply for percentage-based multipliers
+			}
+			
+			m_DamageMultiplierModifiers = Modifier.Concat(New_ModifierAdd).ToList();
+			return Type.Concat(New_TypeAdd).ToList();
+		}
+		
+		static List<Skills.SkillType> MultiplierDamage_Sort(List<Skills.SkillType> List_Type, List<float> List_Modifier, out List<float> List_Sort)
+		{
+			List<Skills.SkillType> New_List_Type = new List<Skills.SkillType>{ };
+			List<float> New_List_Modifier = new List<float>{ };
+			int Index;
+			
+			List<Skills.SkillType> New_SkillTypes = new List<Skills.SkillType>
+			{
+				Skills.SkillType.Swords,
+				Skills.SkillType.Axes,
+				Skills.SkillType.Clubs,
+				Skills.SkillType.Knives,
+				Skills.SkillType.Spears,
+				Skills.SkillType.Polearms,
+				Skills.SkillType.Bows,
+				Skills.SkillType.Crossbows,
+				Skills.SkillType.ElementalMagic,
+				Skills.SkillType.BloodMagic,
+				Skills.SkillType.Unarmed,
+				Skills.SkillType.Pickaxes,
+				Skills.SkillType.WoodCutting
+			};
+			
+			foreach(Skills.SkillType New_SkillType in New_SkillTypes)
+			{
+				if(MultiplierDamage_Sort_Loop(List_Type.ToList(), New_SkillType, out Index))
+				{
+					New_List_Type.Add(List_Type[Index]);
+					New_List_Modifier.Add(List_Modifier[Index]);
+				}
+			}
+			
+			List_Sort = New_List_Modifier;
+			return New_List_Type;
+		}
+		
+		static bool MultiplierDamage_Sort_Loop(List<Skills.SkillType> List, Skills.SkillType SkillType_Sort, out int Index)
+		{
+			Index = 0;
+			
+			foreach(Skills.SkillType New_SkillType in List)
+			{
+				if(New_SkillType == SkillType_Sort)
+				{
+					Index = List.IndexOf(New_SkillType);
+					return true;
+				}
+			}
+			
+			return false;
 		}
 		
 		static float Update_Player_BaseStats(string New_String, Player New_Player)

@@ -64,6 +64,12 @@ namespace ForsakenPowerOverhaul
 			public List<float> m_OutgoingDamageModifiers = new List<float>{ };
 			public float m_HeatDamageModifier = 0.00F;
 			
+			// New multiplier fields for arbitrary percentage damage modification
+			public List<HitData.DamageType> m_IncomingDamageMultiplierTypes = new List<HitData.DamageType>{ };
+			public List<float> m_IncomingDamageMultiplierModifiers = new List<float>{ };
+			public List<Skills.SkillType> m_OutgoingDamageMultiplierTypes = new List<Skills.SkillType>{ };
+			public List<float> m_OutgoingDamageMultiplierModifiers = new List<float>{ };
+			
 			public new bool HaveAttribute(StatusEffect.StatusAttribute New_StatusAttributeA)
 			{
 				bool New_Bool = false;
@@ -148,6 +154,13 @@ namespace ForsakenPowerOverhaul
 					New_StatusEffect_FPO.m_fallDamageModifier = 0.00F - (Dictionary_ConfigEntry_Float["ConfigEntry_" + Power + "_" + Component + "_FallDamageModifier"].Value / 100.00F);
 					New_StatusEffect_FPO.m_HeatDamageModifier = 0.00F - (Dictionary_ConfigEntry_Float["ConfigEntry_" + Power + "_" + Component + "_HeatDamageModifier"].Value / 100.00F);
 					New_StatusEffect_FPO.m_mods = GetIncomingDamages(Dictionary_ConfigEntry_String["ConfigEntry_" + Power + "_" + Component + "_IncomingDamageTypes"].Value, Dictionary_ConfigEntry_String["ConfigEntry_" + Power + "_" + Component + "_IncomingDamageModifiers"].Value);
+					
+					// Add new multiplier fields
+					New_StatusEffect_FPO.m_IncomingDamageMultiplierTypes = GetIncomingDamageMultiplierTypes(Dictionary_ConfigEntry_String["ConfigEntry_" + Power + "_" + Component + "_IncomingDamageMultiplierTypes"].Value, Dictionary_ConfigEntry_String["ConfigEntry_" + Power + "_" + Component + "_IncomingDamageMultiplierModifiers"].Value, out List<float> Out_IncomingDamageMultiplierModifiers);
+					New_StatusEffect_FPO.m_IncomingDamageMultiplierModifiers = Out_IncomingDamageMultiplierModifiers;
+					New_StatusEffect_FPO.m_OutgoingDamageMultiplierTypes = GetOutgoingDamageMultiplierTypes(Dictionary_ConfigEntry_String["ConfigEntry_" + Power + "_" + Component + "_OutgoingDamageMultiplierTypes"].Value, Dictionary_ConfigEntry_String["ConfigEntry_" + Power + "_" + Component + "_OutgoingDamageMultiplierModifiers"].Value, out List<float> Out_OutgoingDamageMultiplierModifiers);
+					New_StatusEffect_FPO.m_OutgoingDamageMultiplierModifiers = Out_OutgoingDamageMultiplierModifiers;
+					
 					ItemManager.Instance.AddStatusEffect(new CustomStatusEffect(New_StatusEffect_FPO, false));
 				}
 			}
@@ -372,6 +385,94 @@ namespace ForsakenPowerOverhaul
 				
 				_ => HitData.DamageModifier.Normal
 			};
+		}
+		
+		/// <summary>
+		/// Parse incoming damage multiplier types and modifiers from config strings
+		/// </summary>
+		static List<HitData.DamageType> GetIncomingDamageMultiplierTypes(string String_Type, string String_Modifier, out List<float> Out_IncomingDamageMultiplierModifiers)
+		{
+			List<string> List_Type = String_Type.Split(',').ToList();
+			List<string> List_Modifier = String_Modifier.Split(',').ToList();
+			
+			List<HitData.DamageType> m_Types = new List<HitData.DamageType>{ };
+			List<float> m_Modifiers = new List<float>{ };
+			
+			for(int Index = 0; ((Index < List_Type.Count) && (Index < List_Modifier.Count)); Index ++)
+			{
+				if(GetIncomingDamageTypeValid(List_Type[Index].ToLower()))
+				{
+					bool New_Bool = true;
+					
+					// Check for duplicates
+					foreach(HitData.DamageType existingType in m_Types)
+					{
+						if(GetIncomingDamageType(List_Type[Index].ToLower()) == existingType)
+						{ New_Bool = false; }
+					}
+					
+					if(New_Bool)
+					{
+						if(float.TryParse(List_Modifier[Index], out float New_Float))
+						{
+							m_Types.Add(GetIncomingDamageType(List_Type[Index].ToLower()));
+							m_Modifiers.Add(New_Float); // Store as percentage (0-200+)
+						}
+						else
+						{
+							m_Types.Add(GetIncomingDamageType(List_Type[Index].ToLower()));
+							m_Modifiers.Add(100.0f); // Default to 100% (no change)
+						}
+					}
+				}
+			}
+			
+			Out_IncomingDamageMultiplierModifiers = m_Modifiers;
+			return m_Types;
+		}
+		
+		/// <summary>
+		/// Parse outgoing damage multiplier types and modifiers from config strings
+		/// </summary>
+		static List<Skills.SkillType> GetOutgoingDamageMultiplierTypes(string String_Type, string String_Modifier, out List<float> Out_OutgoingDamageMultiplierModifiers)
+		{
+			List<string> List_Type = String_Type.Split(',').ToList();
+			List<string> List_Modifier = String_Modifier.Split(',').ToList();
+			
+			List<Skills.SkillType> m_Types = new List<Skills.SkillType>{ };
+			List<float> m_Modifiers = new List<float>{ };
+			
+			for(int Index = 0; ((Index < List_Type.Count) && (Index < List_Modifier.Count)); Index ++)
+			{
+				if(GetOutgoingDamageTypeValid(List_Type[Index].ToLower()))
+				{
+					bool New_Bool = true;
+					
+					// Check for duplicates
+					foreach(Skills.SkillType existingType in m_Types)
+					{
+						if(GetOutgoingDamageType(List_Type[Index].ToLower()) == existingType)
+						{ New_Bool = false; }
+					}
+					
+					if(New_Bool)
+					{
+						if(float.TryParse(List_Modifier[Index], out float New_Float))
+						{
+							m_Types.Add(GetOutgoingDamageType(List_Type[Index].ToLower()));
+							m_Modifiers.Add(New_Float); // Store as percentage (0-200+)
+						}
+						else
+						{
+							m_Types.Add(GetOutgoingDamageType(List_Type[Index].ToLower()));
+							m_Modifiers.Add(100.0f); // Default to 100% (no change)
+						}
+					}
+				}
+			}
+			
+			Out_OutgoingDamageMultiplierModifiers = m_Modifiers;
+			return m_Types;
 		}
 		
 		static string GetTooltipStats(StatusEffect_FPO New_StatusEffect_FPO)
