@@ -214,13 +214,7 @@ def main(argv: List[str]) -> int:
         print("No updates found from TSV files; nothing to do.")
         return 0
 
-    # Backup original once
-    backup = cfg.with_suffix(cfg.suffix + BACKUP_SUFFIX)
-    try:
-        if not backup.exists():
-            backup.write_text(original, encoding="utf-8")
-    except Exception as e:
-        print(f"WARNING: could not write backup: {backup} ({e})", file=sys.stderr)
+    # No backup file generation
 
     # Apply changes
     for section, kv in updates.items():
@@ -254,7 +248,6 @@ def main(argv: List[str]) -> int:
     apply(lines)
     cfg.write_text("".join(lines), encoding="utf-8")
     print(f"Updated: {cfg}")
-    print(f"Backup : {backup}")
     return 0
 
 if __name__ == "__main__":
