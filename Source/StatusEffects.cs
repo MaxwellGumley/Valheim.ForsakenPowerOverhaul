@@ -85,10 +85,24 @@ namespace ForsakenPowerOverhaul
 			
 			public override void ModifyAttack(Skills.SkillType New_SkillTypeA, ref HitData New_HitData)
 			{
+				// Apply regular outgoing damage modifiers (additive)
 				foreach(Skills.SkillType New_SkillTypeB in m_OutgoingDamageTypes)
 				{
 					if((New_SkillTypeB == New_SkillTypeA) || New_SkillTypeB == Skills.SkillType.All)
 					{ New_HitData.m_damage.Modify((1.00F + m_OutgoingDamageModifiers[m_OutgoingDamageTypes.IndexOf(New_SkillTypeB)])); }
+				}
+				
+				// Apply outgoing damage multipliers (multiplicative)
+				foreach(Skills.SkillType skillType in m_OutgoingDamageMultiplierTypes)
+				{
+					if((skillType == New_SkillTypeA) || skillType == Skills.SkillType.All)
+					{
+						float multiplier = m_OutgoingDamageMultiplierModifiers[m_OutgoingDamageMultiplierTypes.IndexOf(skillType)];
+						if(multiplier != 100.00F) // Only apply if different from 100% (no change)
+						{
+							New_HitData.m_damage.Modify(multiplier / 100.00F);
+						}
+					}
 				}
 			}
 			
