@@ -100,6 +100,9 @@ namespace ForsakenPowerOverhaul
 				
 				string New_String = New_StringBuilder.ToString();
 				
+				// Pass the tooltip string through the translation system
+				New_String = ForsakenPowerOverhaul.GetLocalization(New_String);
+				
 				//if(Mod_Auga)
 				//{ New_String = " \n<size=12>" + New_String + "</size>"; }
 				
@@ -588,6 +591,30 @@ namespace ForsakenPowerOverhaul
 			{
 				if(New_DamageModPair.m_modifier != HitData.DamageModifier.Normal)
 				{ New_StringBuilder.Append("$ui_fpo_incoming " + GetToolTipIncomingDamageType(New_DamageModPair.m_type) + ": [General]" + (GetToolTipIncomingDamageModifier(New_DamageModPair.m_modifier) * 100.00F).ToString("+0;-0") + "%</color>\n"); }
+			}
+			
+			// Add multiplier fields to tooltip
+			foreach(HitData.DamageType damageType in New_StatusEffect_FPO.m_IncomingDamageMultiplierTypes)
+			{
+				float multiplier = New_StatusEffect_FPO.m_IncomingDamageMultiplierModifiers[New_StatusEffect_FPO.m_IncomingDamageMultiplierTypes.IndexOf(damageType)];
+				if(multiplier != 100.00F) // Only show if different from 100% (no change)
+				{ 
+					New_StringBuilder.Append("$ui_fpo_incoming_multiplier " + GetToolTipIncomingDamageType(damageType) + ": [General]" + multiplier.ToString("0") + "%</color>\n");
+				}
+			}
+			
+			foreach(Skills.SkillType skillType in New_StatusEffect_FPO.m_OutgoingDamageMultiplierTypes)
+			{
+				float multiplier = New_StatusEffect_FPO.m_OutgoingDamageMultiplierModifiers[New_StatusEffect_FPO.m_OutgoingDamageMultiplierTypes.IndexOf(skillType)];
+				if(multiplier != 100.00F) // Only show if different from 100% (no change)
+				{
+					if(skillType == Skills.SkillType.WoodCutting || skillType == Skills.SkillType.Pickaxes)
+					{ New_StringBuilder.Append("$ui_fpo_outgoing_tool_multiplier " + GetToolTipOutgoingDamageType(skillType) + ": [General]" + multiplier.ToString("0") + "%</color>\n"); }
+					else if(skillType == Skills.SkillType.All)
+					{ New_StringBuilder.Append("$ui_fpo_outgoing_all_multiplier: [General]" + multiplier.ToString("0") + "%</color>\n"); }
+					else
+					{ New_StringBuilder.Append("$ui_fpo_outgoing_multiplier " + GetToolTipOutgoingDamageType(skillType) + ": [General]" + multiplier.ToString("0") + "%</color>\n"); }
+				}
 			}
 			
 			string New_String = New_StringBuilder.ToString();

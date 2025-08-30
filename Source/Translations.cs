@@ -39,6 +39,15 @@ namespace ForsakenPowerOverhaul
 				{ "ui_fpo_outgoing_tool", "Efficiency with" },
 				{ "ui_fpo_incoming", "Incoming Damage from" },
 				
+				{ "ui_fpo_outgoing_multiplier", "Outgoing Damage Multiplier with" },
+				{ "ui_fpo_outgoing_all_multiplier", "Outgoing Damage Multiplier" },
+				{ "ui_fpo_outgoing_tool_multiplier", "Efficiency Multiplier with" },
+				{ "ui_fpo_incoming_multiplier", "Incoming Damage Multiplier from" },
+				
+				// Damage type translations
+				{ "ui_fpo_physical", "Physical" },
+				{ "ui_fpo_elemental", "Elemental" },
+				
 				{ "ui_fpo_heatdamage", "Heat Damage" }
 			});
 		}
