@@ -1134,6 +1134,14 @@ namespace ForsakenPowerOverhaul
 		
 		static void Config_SettingReset()
 		{
+			// Check if arrays are initialized before accessing them
+			if (List_StatusEffect_FPO_Passive == null || List_StatusEffect_FPO_Equipped == null || 
+				List_StatusEffect_FPO_Active == null || List_StatusEffect_FPO_Shared == null)
+			{
+				ForsakenPowerOverhaul.log?.LogWarning("StatusEffect arrays are null, skipping Config_SettingReset");
+				return;
+			}
+			
 			foreach(string Boss in List_BossNames)
 			{
 				int Index = Boss switch
@@ -1148,6 +1156,16 @@ namespace ForsakenPowerOverhaul
 					
 					_ => 0
 				};
+				
+				// Check list bounds before accessing (using Count for Lists)
+				if (Index < 0 || Index >= List_StatusEffect_FPO_Passive.Count || 
+					Index >= List_StatusEffect_FPO_Equipped.Count ||
+					Index >= List_StatusEffect_FPO_Active.Count ||
+					Index >= List_StatusEffect_FPO_Shared.Count)
+				{
+					ForsakenPowerOverhaul.log?.LogWarning($"Index {Index} is out of bounds for boss {Boss}");
+					continue;
+				}
 				
 				foreach(string Component in List_Components)
 				{

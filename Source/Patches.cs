@@ -561,11 +561,11 @@ namespace ForsakenPowerOverhaul
 		[HarmonyPatch(typeof(SEMan), "RemoveStatusEffect", new System.Type[] { typeof(StatusEffect), typeof(bool) })]
 		class Patch_SEMan_RemoveStatusEffect_InvalidateCache
 		{
-			static void Postfix(SEMan __instance, StatusEffect statusEffect)
+			static void Postfix(SEMan __instance, StatusEffect se)
 			{
 				// Use reflection to get the character field from SEMan
 				var characterField = AccessTools.Field(typeof(SEMan), "m_character");
-				if (characterField?.GetValue(__instance) is Player player && statusEffect is StatusEffect_FPO)
+				if (characterField?.GetValue(__instance) is Player player && se is StatusEffect_FPO)
 				{
 					DamageMultiplierCache.Reset(player);
 				}

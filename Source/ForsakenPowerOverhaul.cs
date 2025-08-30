@@ -55,6 +55,9 @@ namespace ForsakenPowerOverhaul
 		static List<StatusEffect_FPO> List_StatusEffect_FPO_Active = new List<StatusEffect_FPO>();
 		static List<StatusEffect_FPO> List_StatusEffect_FPO_Shared = new List<StatusEffect_FPO>();
 		
+		// Flag to track when StatusEffects are ready
+		static bool StatusEffectsReady = false;
+		
 		static bool Mod_Auga = false;
 		static bool Mod_EpicLoot = false;
 		
@@ -71,6 +74,10 @@ namespace ForsakenPowerOverhaul
 			
 			Add_ConfigEntries();
 			Add_Buttons();
+			
+			// Subscribe to the event BEFORE registering status effects
+			ItemManager.OnItemsRegistered += OnItemsRegistered;
+			
 			Add_StatusEffects();
 			Add_Translations();
 			
@@ -78,6 +85,15 @@ namespace ForsakenPowerOverhaul
 			New_Harmony.PatchAll();
 			
 			PrefabManager.OnVanillaPrefabsAvailable += Add_Prefabs;
+		}
+		
+		private void OnItemsRegistered()
+		{
+			// StatusEffects are now registered in ObjectDB, we can safely populate our lists
+			Add_StatusEffectLists();
+			StatusEffectsReady = true;
+			ItemManager.OnItemsRegistered -= OnItemsRegistered; // Unsubscribe to prevent multiple calls
+			log.LogInfo("StatusEffects initialized and ready!");
 		}
 		
 		private static void InitializeFieldAccessors()
@@ -122,10 +138,15 @@ namespace ForsakenPowerOverhaul
 		
 		void Update()
 		{
-			if(ObjectDB.instance == null) { return; }
+			// Don't proceed until StatusEffects are properly initialized
+			if (!StatusEffectsReady || ObjectDB.instance == null)
+			{
+				return;
+			}
 		
 			if(StatusEffect_FPO_Passive == null)
 			{ 
+				log.LogWarning("StatusEffect_FPO_Passive is null despite StatusEffects being marked as ready. Attempting re-initialization.");
 				Add_StatusEffectLists(); 
 			}
 			
@@ -329,6 +350,13 @@ namespace ForsakenPowerOverhaul
 		
 		static void Update_Passive_Stats()
 		{
+			// Check if StatusEffect_FPO_Passive is initialized before accessing it
+			if (StatusEffect_FPO_Passive == null)
+			{
+				log?.LogWarning("StatusEffect_FPO_Passive is null, skipping Update_Passive_Stats");
+				return;
+			}
+			
 			StatusEffect_FPO_Passive.m_MaxHealth = 0.00F;
 			StatusEffect_FPO_Passive.m_HealthRegen = 0;
 			StatusEffect_FPO_Passive.m_healthRegenMultiplier = 1.00F;
