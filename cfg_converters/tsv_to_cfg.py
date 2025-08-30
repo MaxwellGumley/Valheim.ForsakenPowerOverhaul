@@ -171,9 +171,11 @@ def read_tsv_updates(tsv_path: Path,
             if col_i >= len(row):
                 continue
             val = row[col_i]
-            if IGNORE_EMPTY_CELLS and val == "":
-                continue
-            updates.setdefault(section, {})[cfg_key] = val
+            # If cell is empty, set value to empty string (do not skip)
+            if val == "":
+                updates.setdefault(section, {})[cfg_key] = ""
+            else:
+                updates.setdefault(section, {})[cfg_key] = val
 
     return updates
 
