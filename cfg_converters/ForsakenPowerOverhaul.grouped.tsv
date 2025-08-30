@@ -1,0 +1,7 @@
+Section	Power	Preset	Power	Power	Enable	Max	Health	Health	Max	Stamina	Max	Eitr	Max	Move	Jump	Max	Equipment	Wind	Run	Jump	Stealth	Noise	Status	Outgoing	Outgoing	Fall	Heat	Incoming	Incoming	Incoming	Incoming	Outgoing	Outgoing	Enabled
+	Cycle		Active	Cooldown	Power	Health	Regen	Regen	Stamina	Regen	Eitr	Regen	Weight	Speed	Force	Fall	Speed	Speed	Stamina	Stamina	Modifier	Modifier	Attributes	Damage	Damage	Damage	Damage	Damage	Damage	Damage	Damage	Damage	Damage	
+			Duration	Duration	Cycling			Modifier		Modifier		Modifier		Modifier	Modifier	Speed	Modifier	Modifier	Cost	Cost				Types	Modifiers	Modifier	Modifier	Types	Modifiers	Multiplier	Multiplier	Multiplier	Multiplier	
+																			Modifier	Modifier										Types	Modifiers	Types	Modifiers	
+C00 Client	G																																	
+S00 Server: General		Vanilla+	60	240	true																													
+SX1 Server: Corpse Run																																		true
