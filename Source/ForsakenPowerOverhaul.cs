@@ -21,6 +21,16 @@ namespace ForsakenPowerOverhaul
 		const string PluginName = "Forsaken Power Overhaul";
 		const string PluginVersion = "1.0";
 		
+		// Simple assert that works in release builds (like Python's assert)
+		private static void Assert(bool condition, string message = "Assertion failed")
+		{
+			if (!condition)
+			{
+				log?.LogError($"ASSERTION FAILED: {message}");
+				throw new System.Exception($"ForsakenPowerOverhaul assertion failed: {message}");
+			}
+		}
+		
 		// Update timing constants
 		private const float STATUS_EFFECT_UPDATE_INTERVAL = 0.2f; // Seconds between expensive updates
 		
@@ -89,11 +99,33 @@ namespace ForsakenPowerOverhaul
 		
 		private void OnItemsRegistered()
 		{
-			// StatusEffects are now registered in ObjectDB, we can safely populate our lists
-			Add_StatusEffectLists();
-			StatusEffectsReady = true;
-			ItemManager.OnItemsRegistered -= OnItemsRegistered; // Unsubscribe to prevent multiple calls
-			log.LogInfo("StatusEffects initialized and ready!");
+			try
+			{
+				// StatusEffects are now registered in ObjectDB, we can safely populate our lists
+				Add_StatusEffectLists();
+				
+				// Only mark as ready if initialization was successful
+				if (StatusEffect_FPO_Passive != null)
+				{
+					StatusEffectsReady = true;
+					log.LogInfo("StatusEffects initialized and ready!");
+				}
+				else
+				{
+					log.LogError("CRITICAL: StatusEffects initialization failed - core effects not found in ObjectDB");
+					StatusEffectsReady = false;
+				}
+			}
+			catch (System.Exception ex)
+			{
+				log.LogError($"CRITICAL: Exception during StatusEffects initialization: {ex.Message}");
+				log.LogError($"Stack trace: {ex.StackTrace}");
+				StatusEffectsReady = false;
+			}
+			finally
+			{
+				ItemManager.OnItemsRegistered -= OnItemsRegistered; // Always unsubscribe to prevent multiple calls
+			}
 		}
 		
 		private static void InitializeFieldAccessors()
@@ -144,11 +176,7 @@ namespace ForsakenPowerOverhaul
 				return;
 			}
 		
-			if(StatusEffect_FPO_Passive == null)
-			{ 
-				log.LogWarning("StatusEffect_FPO_Passive is null despite StatusEffects being marked as ready. Attempting re-initialization.");
-				Add_StatusEffectLists(); 
-			}
+			Assert(StatusEffect_FPO_Passive != null, "StatusEffect_FPO_Passive is null despite StatusEffects being marked as ready");
 			
 			if(Player.m_localPlayer == null || Player.m_localPlayer.IsDead()) { return; }
 					
@@ -174,7 +202,11 @@ namespace ForsakenPowerOverhaul
 		
 		static void Add_StatusEffectLists()
 		{
+			Assert(ObjectDB.instance != null, "ObjectDB.instance is null when trying to populate StatusEffect lists");
+			
 			StatusEffect_FPO_Passive = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Passive"));
+			Assert(StatusEffect_FPO_Passive != null, "Failed to retrieve SE_FPO_Passive from ObjectDB");
+			
 			StatusEffect_FPO_Eikthyr = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Eikthyr"));
 			StatusEffect_FPO_TheElder = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_TheElder"));
 			StatusEffect_FPO_Bonemass = (StatusEffect_FPO)ObjectDB.instance.GetStatusEffect(GetHash("SE_FPO_Bonemass"));
@@ -259,6 +291,29 @@ namespace ForsakenPowerOverhaul
 			List_StatusEffect_FPO_Shared.Add(StatusEffect_FPO_Yagluth_Shared);
 			List_StatusEffect_FPO_Shared.Add(StatusEffect_FPO_Queen_Shared);
 			List_StatusEffect_FPO_Shared.Add(StatusEffect_FPO_Fader_Shared);
+			
+			// Final validation - count null entries to detect registration failures
+			int nullCount = 0;
+			List<string> missingEffects = new List<string>();
+			
+			// Check all critical status effects
+			if (StatusEffect_FPO_Passive == null) { nullCount++; missingEffects.Add("SE_FPO_Passive"); }
+			if (StatusEffect_FPO_Eikthyr_Passive == null) { nullCount++; missingEffects.Add("SE_FPO_Eikthyr_Passive"); }
+			if (StatusEffect_FPO_TheElder_Passive == null) { nullCount++; missingEffects.Add("SE_FPO_TheElder_Passive"); }
+			if (StatusEffect_FPO_Bonemass_Passive == null) { nullCount++; missingEffects.Add("SE_FPO_Bonemass_Passive"); }
+			if (StatusEffect_FPO_Moder_Passive == null) { nullCount++; missingEffects.Add("SE_FPO_Moder_Passive"); }
+			if (StatusEffect_FPO_Yagluth_Passive == null) { nullCount++; missingEffects.Add("SE_FPO_Yagluth_Passive"); }
+			if (StatusEffect_FPO_Queen_Passive == null) { nullCount++; missingEffects.Add("SE_FPO_Queen_Passive"); }
+			if (StatusEffect_FPO_Fader_Passive == null) { nullCount++; missingEffects.Add("SE_FPO_Fader_Passive"); }
+			
+			if (nullCount > 0)
+			{
+				Assert(false, $"{nullCount} StatusEffects failed to load from ObjectDB: {string.Join(", ", missingEffects)}");
+			}
+			else
+			{
+				log?.LogInfo("All StatusEffects successfully loaded and validated.");
+			}
 		}
 		
 		static void GlobalKeys_Update(BossStone New_BossStone)
@@ -350,12 +405,7 @@ namespace ForsakenPowerOverhaul
 		
 		static void Update_Passive_Stats()
 		{
-			// Check if StatusEffect_FPO_Passive is initialized before accessing it
-			if (StatusEffect_FPO_Passive == null)
-			{
-				log?.LogWarning("StatusEffect_FPO_Passive is null, skipping Update_Passive_Stats");
-				return;
-			}
+			Assert(StatusEffect_FPO_Passive != null, "Update_Passive_Stats called with null StatusEffect_FPO_Passive");
 			
 			StatusEffect_FPO_Passive.m_MaxHealth = 0.00F;
 			StatusEffect_FPO_Passive.m_HealthRegen = 0;
@@ -451,8 +501,12 @@ namespace ForsakenPowerOverhaul
 		
 		static void Update_Equipped_Stats()
 		{
+			Assert(List_StatusEffect_FPO_Equipped != null, "List_StatusEffect_FPO_Equipped is null");
+			
 			foreach(StatusEffect_FPO New_StatusEffect_FPO in List_StatusEffect_FPO_Equipped)
 			{
+				Assert(New_StatusEffect_FPO != null, "Found null StatusEffect_FPO in List_StatusEffect_FPO_Equipped");
+				
 				New_StatusEffect_FPO.m_ttl = 0.00F;
 				New_StatusEffect_FPO.m_icon = ObjectDB.instance.GetStatusEffect(GetHash(New_StatusEffect_FPO.name.Replace("SE_FPO_", "GP_").Replace("_Equipped", ""))).m_icon;
 			}
@@ -460,10 +514,15 @@ namespace ForsakenPowerOverhaul
 		
 		static void Update_Active_Stats()
 		{
+			Assert(List_StatusEffect_FPO != null && List_StatusEffect_FPO_Active != null, "StatusEffect lists are null");
+			Assert(List_StatusEffect_FPO.Count == List_StatusEffect_FPO_Active.Count, $"StatusEffect list count mismatch - Main: {List_StatusEffect_FPO.Count}, Active: {List_StatusEffect_FPO_Active.Count}");
+			
 			if(List_StatusEffect_FPO.Count > 0)
 			{
 				for(int Index = 0; Index < List_StatusEffect_FPO.Count; Index ++)
 				{
+					Assert(List_StatusEffect_FPO[Index] != null && List_StatusEffect_FPO_Active[Index] != null, $"Found null StatusEffect at index {Index}");
+					
 					List_StatusEffect_FPO[Index].m_MaxHealth = List_StatusEffect_FPO_Active[Index].m_MaxHealth;
 					List_StatusEffect_FPO[Index].m_HealthRegen = List_StatusEffect_FPO_Active[Index].m_HealthRegen;
 					List_StatusEffect_FPO[Index].m_healthRegenMultiplier = List_StatusEffect_FPO_Active[Index].m_healthRegenMultiplier;

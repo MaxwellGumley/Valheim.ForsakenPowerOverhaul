@@ -1134,12 +1134,12 @@ namespace ForsakenPowerOverhaul
 		
 		static void Config_SettingReset()
 		{
-			// Check if arrays are initialized before accessing them
+			// Assert that arrays are initialized
 			if (List_StatusEffect_FPO_Passive == null || List_StatusEffect_FPO_Equipped == null || 
 				List_StatusEffect_FPO_Active == null || List_StatusEffect_FPO_Shared == null)
 			{
-				ForsakenPowerOverhaul.log?.LogWarning("StatusEffect arrays are null, skipping Config_SettingReset");
-				return;
+				ForsakenPowerOverhaul.log?.LogError("ASSERTION FAILED: StatusEffect arrays are null in Config_SettingReset");
+				throw new System.Exception("ForsakenPowerOverhaul assertion failed: StatusEffect arrays are null in Config_SettingReset");
 			}
 			
 			foreach(string Boss in List_BossNames)
@@ -1157,14 +1157,14 @@ namespace ForsakenPowerOverhaul
 					_ => 0
 				};
 				
-				// Check list bounds before accessing (using Count for Lists)
+				// Assert list bounds
 				if (Index < 0 || Index >= List_StatusEffect_FPO_Passive.Count || 
 					Index >= List_StatusEffect_FPO_Equipped.Count ||
 					Index >= List_StatusEffect_FPO_Active.Count ||
 					Index >= List_StatusEffect_FPO_Shared.Count)
 				{
-					ForsakenPowerOverhaul.log?.LogWarning($"Index {Index} is out of bounds for boss {Boss}");
-					continue;
+					ForsakenPowerOverhaul.log?.LogError($"ASSERTION FAILED: Index {Index} is out of bounds for boss {Boss}");
+					throw new System.Exception($"ForsakenPowerOverhaul assertion failed: Index {Index} out of bounds for boss {Boss}");
 				}
 				
 				foreach(string Component in List_Components)
