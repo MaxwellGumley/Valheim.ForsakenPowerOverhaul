@@ -185,7 +185,7 @@ namespace ForsakenPowerOverhaul
 		
 		static List<StatusEffect.StatusAttribute> GetStatusAttributes(string List)
 		{
-			List<string> New_List = List.Split(',').ToList();
+			List<string> New_List = ParseCommaSeparatedValues(List);
 			
 			List<StatusEffect.StatusAttribute> m_StatusAttributes = new List<StatusEffect.StatusAttribute>{ };
 			
@@ -235,8 +235,8 @@ namespace ForsakenPowerOverhaul
 		
 		static List<Skills.SkillType> GetOutgoingDamages(string String_Type, string String_Modifier, out List<float> Out_OutgoingDamageModifiers)
 		{
-			List<string> List_Type = String_Type.Split(',').ToList();
-			List<string> List_Modifier = String_Modifier.Split(',').ToList();
+			List<string> List_Type = ParseCommaSeparatedValues(String_Type);
+			List<string> List_Modifier = ParseCommaSeparatedValues(String_Modifier);
 			
 			List<Skills.SkillType> m_OutgoingDamageTypes = new List<Skills.SkillType>{ };
 			List<float> m_OutgoingDamageModifiers = new List<float>{ };
@@ -317,8 +317,8 @@ namespace ForsakenPowerOverhaul
 		
 		static List<HitData.DamageModPair> GetIncomingDamages(string String_Type, string String_Modifier)
 		{
-			List<string> List_Type = String_Type.Split(',').ToList();
-			List<string> List_Modifier = String_Modifier.Split(',').ToList();
+			List<string> List_Type = ParseCommaSeparatedValues(String_Type);
+			List<string> List_Modifier = ParseCommaSeparatedValues(String_Modifier);
 			
 			List<HitData.DamageModPair> m_Mods = new List<HitData.DamageModPair>{ };
 			
@@ -405,12 +405,41 @@ namespace ForsakenPowerOverhaul
 		}
 		
 		/// <summary>
+		/// Parse comma-separated values, handling both quoted and unquoted formats
+		/// </summary>
+		static List<string> ParseCommaSeparatedValues(string input)
+		{
+			if (string.IsNullOrEmpty(input))
+				return new List<string>();
+			
+			// Trim the input
+			input = input.Trim();
+			
+			// Check if trimmed input is empty
+			if (string.IsNullOrEmpty(input))
+				return new List<string>();
+			
+			// Check if the entire string is quoted
+			if (input.StartsWith("\"") && input.EndsWith("\"") && input.Length >= 2)
+			{
+				// Remove outer quotes and split
+				string unquoted = input.Substring(1, input.Length - 2);
+				return unquoted.Split(',').Select(s => s.Trim()).ToList();
+			}
+			else
+			{
+				// Normal comma-separated values
+				return input.Split(',').Select(s => s.Trim()).ToList();
+			}
+		}
+
+		/// <summary>
 		/// Parse incoming damage multiplier types and modifiers from config strings
 		/// </summary>
 		static List<HitData.DamageType> GetIncomingDamageMultiplierTypes(string String_Type, string String_Modifier, out List<float> Out_IncomingDamageMultiplierModifiers)
 		{
-			List<string> List_Type = String_Type.Split(',').ToList();
-			List<string> List_Modifier = String_Modifier.Split(',').ToList();
+			List<string> List_Type = ParseCommaSeparatedValues(String_Type);
+			List<string> List_Modifier = ParseCommaSeparatedValues(String_Modifier);
 			
 			List<HitData.DamageType> m_Types = new List<HitData.DamageType>{ };
 			List<float> m_Modifiers = new List<float>{ };
@@ -453,8 +482,8 @@ namespace ForsakenPowerOverhaul
 		/// </summary>
 		static List<Skills.SkillType> GetOutgoingDamageMultiplierTypes(string String_Type, string String_Modifier, out List<float> Out_OutgoingDamageMultiplierModifiers)
 		{
-			List<string> List_Type = String_Type.Split(',').ToList();
-			List<string> List_Modifier = String_Modifier.Split(',').ToList();
+			List<string> List_Type = ParseCommaSeparatedValues(String_Type);
+			List<string> List_Modifier = ParseCommaSeparatedValues(String_Modifier);
 			
 			List<Skills.SkillType> m_Types = new List<Skills.SkillType>{ };
 			List<float> m_Modifiers = new List<float>{ };
