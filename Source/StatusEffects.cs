@@ -406,6 +406,7 @@ namespace ForsakenPowerOverhaul
 		
 		/// <summary>
 		/// Parse comma-separated values, handling both quoted and unquoted formats
+		/// Also handles semicolon-separated values for LibreCalc compatibility
 		/// </summary>
 		static List<string> ParseCommaSeparatedValues(string input)
 		{
@@ -419,12 +420,25 @@ namespace ForsakenPowerOverhaul
 			if (string.IsNullOrEmpty(input))
 				return new List<string>();
 			
-			// Check if the entire string is quoted
-			if (input.StartsWith("\"") && input.EndsWith("\"") && input.Length >= 2)
+			// Handle escaped quotes from BepInEx config system
+			if (input.StartsWith("\\\"") && input.EndsWith("\\\"") && input.Length >= 4)
 			{
-				// Remove outer quotes and split
+				// Remove escaped quotes and split by comma
+				string unquoted = input.Substring(2, input.Length - 4);
+				return unquoted.Split(',').Select(s => s.Trim()).ToList();
+			}
+			// Check if the entire string is quoted (regular quotes)
+			else if (input.StartsWith("\"") && input.EndsWith("\"") && input.Length >= 2)
+			{
+				// Remove outer quotes and split by comma
 				string unquoted = input.Substring(1, input.Length - 2);
 				return unquoted.Split(',').Select(s => s.Trim()).ToList();
+			}
+			// Check if using pipe delimiter (recommended - avoids comment conflicts)
+			else if (input.Contains("|"))
+			{
+				// Split by pipe and filter out empty entries
+				return input.Split('|').Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList();
 			}
 			else
 			{

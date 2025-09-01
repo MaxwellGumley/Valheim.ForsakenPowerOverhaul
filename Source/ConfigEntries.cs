@@ -800,7 +800,7 @@ namespace ForsakenPowerOverhaul
 			string String_Value_IncomingDamageMultiplierModifiers = "Acceptable Values: Any percentage (e.g., 90.0 = 10% damage reduction, 110.0 = 10% damage increase).";
 			string String_Value_OutgoingDamageMultiplierTypes = "Acceptable Values: [All, Unarmed, Clubs, Axes, Knives, Spears, Swords, Polearms, Bows, Crossbows, ElementalMagic, BloodMagic, WoodCutting, Pickaxes].";
 			string String_Value_OutgoingDamageMultiplierModifiers = "Acceptable Values: Any percentage (e.g., 110.0 = 10% damage increase, 90.0 = 10% damage reduction).";
-			string String_Value_Multiple = "Multiple Values Acceptable with Format: \"ValueA,ValueB,ValueC\" or ValueA,ValueB,ValueC (quotes optional but recommended for spreadsheet compatibility).";
+			string String_Value_Multiple = "Multiple Values Acceptable with Format: \"ValueA,ValueB,ValueC\" or ValueA,ValueB,ValueC or ValueA|ValueB|ValueC (pipes recommended - avoids comment conflicts and LibreCalc auto-conversion).";
 			
 			string String_ModPriority = "This Config may take priority over most mods.";
 			string String_GameBalance = "This Config is for Game Balance.";

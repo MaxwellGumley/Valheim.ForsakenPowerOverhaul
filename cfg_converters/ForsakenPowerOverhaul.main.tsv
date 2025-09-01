@@ -11,22 +11,22 @@ S22 Server: TheElder (Equipped)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0		All	15	0	0
 S23 Server: TheElder (Active)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0		All	30	0	0						
 S24 Server: TheElder (Shared)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0				0	0						
 S31 Server: Bonemass (Passive)	0	0	0	0	0	0	0	50	0	0	0	0	0	0	0	0	0				0	0						
-S32 Server: Bonemass (Equipped)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0				0	0			Pierce,Slash,Blunt	"""85,85,85"""		
-S33 Server: Bonemass (Active)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0				0	0			Pierce,Slash,Blunt	"""70,70,70"""		
+S32 Server: Bonemass (Equipped)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0				0	0			Pierce,Slash,Blunt	85|85|85		
+S33 Server: Bonemass (Active)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0				0	0			Pierce,Slash,Blunt	70|70|70		
 S34 Server: Bonemass (Shared)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0				0	0						
 S41 Server: Moder (Passive)	0	0	0	0	0	0	0	50	0	0	0	0	0	0	0	0	0				0	0						
 S42 Server: Moder (Equipped)	0	0	0	0	0	0	0	0	0	0	0	0	50	0	0	50	50	SailingPower			50	0						
 S43 Server: Moder (Active)	0	0	0	0	0	0	0	0	0	0	5	0	50	0	0	200	90				100	0						
 S44 Server: Moder (Shared)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0				0	0						
 S51 Server: Yagluth (Passive)	0	0	0	0	0	0	0	50	0	0	0	0	0	0	0	0	0				0	0						
-S52 Server: Yagluth (Equipped)	0	0	0	0	0		0	0	0	0	0	0	0	0	0	0	0				0	15			Lightning,Poison,Frost,Fire,Spirit	"""85,85,85,85,85"""		
-S53 Server: Yagluth (Active)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0				0	30			Lightning,Poison,Frost,Fire,Spirit	"""70,70,70,70,70"""		
+S52 Server: Yagluth (Equipped)	0	0	0	0	0		0	0	0	0	0	0	0	0	0	0	0				0	15			Lightning,Poison,Frost,Fire,Spirit	85|85|85|85|85		
+S53 Server: Yagluth (Active)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0				0	30			Lightning,Poison,Frost,Fire,Spirit	70|70|70|70|70		
 S54 Server: Yagluth (Shared)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0				0	0						
 S61 Server: Queen (Passive)	0	0	0	0	0	0	0	50	0	0	0	0	0	0	0	0	0				0	0						
 S62 Server: Queen (Equipped)	0	0	50	0	100	0	100	0	0	0	0	0	0	0	0	0	0				0	0						
 S63 Server: Queen (Active)	0	0	100	0	1000	0	1000	0	0	0	0	0	0	0	0	0	0				0	0						
 S64 Server: Queen (Shared)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0				0	0						
 S71 Server: Fader (Passive)	0	0	0	0	0	0	0	50	0	0	0	0	0	0	0	0	0				0	0						
-S72 Server: Fader (Equipped)	0	0	50	0	50	0	50	0	10	0	0	15	0	10	10	10	10		All	5	10	5			Lightning,Poison,Frost,Fire,Spirit	"""95,95,95,95,95"""		
-S73 Server: Fader (Active)	50	0	100	0	100	100	100	0	0	0	0	30	0	25	25	30	30		All	15	30	15			Lightning,Poison,Frost,Fire,Spirit	"""85,85,85,85,85"""		
+S72 Server: Fader (Equipped)	0	0	50	0	50	0	50	0	10	0	0	15	0	10	10	10	10		All	5	10	5			All	95		
+S73 Server: Fader (Active)	50	0	100	0	100	100	100	0	0	0	0	30	0	25	25	30	30		All	15	30	15			All	90		
 S74 Server: Fader (Shared)	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0	0				0	0						
