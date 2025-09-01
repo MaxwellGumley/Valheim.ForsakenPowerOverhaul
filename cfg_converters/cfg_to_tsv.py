@@ -21,7 +21,7 @@ from collections import OrderedDict
 from typing import List, Dict, Tuple
 
 # ========= USER CONSTANTS =========
-INPUT_FILENAME               = "Tidalwave.Valheim.ForsakenPowerOverhaul.cfg"
+INPUT_FILENAME               = "Tidalwave.ForsakenPowerOverhaul.cfg"
 MAIN_TSV_FILENAME            = "ForsakenPowerOverhaul.main.tsv"
 GROUPED_TSV_FILENAME         = "ForsakenPowerOverhaul.grouped.tsv"
 

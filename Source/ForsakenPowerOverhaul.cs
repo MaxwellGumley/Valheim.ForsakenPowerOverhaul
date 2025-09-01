@@ -17,7 +17,7 @@ namespace ForsakenPowerOverhaul
 	
 	partial class ForsakenPowerOverhaul : BaseUnityPlugin
 	{
-		const string PluginGUID = "Tidalwave.Valheim.ForsakenPowerOverhaul";
+		const string PluginGUID = "Tidalwave.ForsakenPowerOverhaul";
 		const string PluginName = "Forsaken Power Overhaul";
 		const string PluginVersion = "1.0";
 		

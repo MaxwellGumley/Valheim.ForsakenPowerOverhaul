@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
-    <AssemblyName>ForsakenPowerOverhaul</AssemblyName>
+    <AssemblyName>Tidalwave.ForsakenPowerOverhaul</AssemblyName>
     <RootNamespace>ForsakenPowerOverhaul</RootNamespace>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

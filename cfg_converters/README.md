@@ -48,7 +48,7 @@ The converter scripts in the `cfg_converters/` directory now support the enhance
 ### For Existing Configurations
 1. **Convert to semicolons** (recommended):
    ```bash
-   (cd cfg_converters && python cfg_format_converter.py Tidalwave.Valheim.ForsakenPowerOverhaul.cfg semicolon)
+   (cd cfg_converters && python cfg_format_converter.py Tidalwave.ForsakenPowerOverhaul.cfg semicolon)
    ```
 
 2. **Export to TSV** for LibreCalc editing:
@@ -70,10 +70,10 @@ The converter scripts in the `cfg_converters/` directory now support the enhance
 (cd cfg_converters && python test_parser.py)
 
 # Convert config to semicolon format (recommended)
-(cd cfg_converters && python cfg_format_converter.py Tidalwave.Valheim.ForsakenPowerOverhaul.cfg semicolon)
+(cd cfg_converters && python cfg_format_converter.py Tidalwave.ForsakenPowerOverhaul.cfg semicolon)
 
 # Convert back to comma format if needed
-(cd cfg_converters && python cfg_format_converter.py Tidalwave.Valheim.ForsakenPowerOverhaul.cfg comma)
+(cd cfg_converters && python cfg_format_converter.py Tidalwave.ForsakenPowerOverhaul.cfg comma)
 
 # Export to TSV for LibreCalc (works with any format)
 (cd cfg_converters && python cfg_to_tsv.py)

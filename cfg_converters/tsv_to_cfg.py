@@ -19,7 +19,7 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 
 # ========= USER CONSTANTS =========
-CFG_FILENAME               = "Tidalwave.Valheim.ForsakenPowerOverhaul.cfg"
+CFG_FILENAME               = "Tidalwave.ForsakenPowerOverhaul.cfg"
 MAIN_TSV_FILENAME          = "ForsakenPowerOverhaul.main.tsv"
 GROUPED_TSV_FILENAME       = "ForsakenPowerOverhaul.grouped.tsv"
 
