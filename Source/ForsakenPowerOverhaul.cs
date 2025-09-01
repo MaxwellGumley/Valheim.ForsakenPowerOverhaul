@@ -1069,8 +1069,38 @@ namespace ForsakenPowerOverhaul
 			}
 		}
 		
+		static bool IsAnyActiveAbilityRunning()
+		{
+			if (Player.m_localPlayer == null) return false;
+			
+			var seman = GetSEMan(Player.m_localPlayer);
+			if (seman == null) return false;
+			
+			// Check if any active boss ability status effect is currently running
+			// Active abilities are named SE_FPO_[BossName] (without _Active suffix)
+			// We need to exclude SE_FPO_Passive and SE_FPO_[BossName]_Equipped
+			foreach (StatusEffect statusEffect in seman.GetStatusEffects())
+			{
+				if (statusEffect.name.StartsWith("SE_FPO_") && 
+					!statusEffect.name.EndsWith("_Equipped") && 
+					statusEffect.name != "SE_FPO_Passive")
+				{
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
 		static void Power_Cycle()
 		{
+			// Prevent power cycling while an active ability is running
+			if (IsAnyActiveAbilityRunning())
+			{
+				Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Cannot change powers while a power is active!");
+				return;
+			}
+			
 			List<string> PlayerKeys = new List<string>{ };
 			
 			PlayerKeys_Update();
