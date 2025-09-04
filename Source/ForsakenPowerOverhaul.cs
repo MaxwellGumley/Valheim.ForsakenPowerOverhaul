@@ -181,13 +181,17 @@ namespace ForsakenPowerOverhaul
 			if(Player.m_localPlayer == null || Player.m_localPlayer.IsDead()) { return; }
 					
 			// Input handling runs every frame for responsiveness
-			if (UnityEngine.Input.inputString.Length > 0 &&
-				ButtonConfig_PowerCycle != null &&
+			// Only check UI blocking if the hotkey is actually pressed
+			if (ButtonConfig_PowerCycle != null &&
 				ConfigEntry_PowerCycle_Bool.Value &&
-				UnityEngine.Input.GetKeyDown(KeyCode.G) &&
+				UnityEngine.Input.GetKeyDown(ButtonConfig_PowerCycle.Config.Value) &&
 				Player.m_localPlayer.GetGuardianPowerName().StartsWith("GP_"))
 			{
-				Power_Cycle();
+				// Only check UI state if hotkey is pressed
+				if (!UiBlocking())
+				{
+					Power_Cycle();
+				}
 			}
 
 			// Only run expensive updates periodically
@@ -1089,6 +1093,29 @@ namespace ForsakenPowerOverhaul
 				}
 			}
 			
+			return false;
+		}
+		
+		// Call this before acting on any hotkey
+		static bool UiBlocking()
+		{
+			// 1) text/typing or console/chat focus
+			if (Console.instance != null && Console.IsVisible()) return true; // F5 console open
+			if (Chat.instance != null && Chat.instance.HasFocus()) return true; // typing in chat
+			if (TextInput.IsVisible()) return true; // any text input popup
+			
+			// 2) major screens
+			if (InventoryGui.instance != null && InventoryGui.IsVisible()) return true;
+			if (StoreGui.instance != null && StoreGui.IsVisible()) return true;
+			if (Minimap.instance != null && Minimap.IsOpen()) return true; // map fullscreen
+			
+			// 3) top-level menus / pause
+			if (Menu.IsVisible()) return true; // esc menu / settings
+			
+			// 4) optional: block when the game wants the mouse cursor
+			if (GameCamera.instance != null && GameCamera.InFreeFly()) return true; // editor-like cam
+			
+			// allow gameplay hotkeys
 			return false;
 		}
 		
