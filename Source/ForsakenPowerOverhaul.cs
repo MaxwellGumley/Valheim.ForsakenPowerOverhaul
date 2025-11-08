@@ -216,6 +216,7 @@ namespace ForsakenPowerOverhaul
 			}
 
 			// Only run expensive updates periodically
+			float currentTime = Time.time;
 			if (currentTime - lastStatusEffectUpdate >= STATUS_EFFECT_UPDATE_INTERVAL)
 			{
 				Update_Player_StatusEffects();
