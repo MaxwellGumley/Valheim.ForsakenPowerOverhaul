@@ -19,7 +19,7 @@ namespace ForsakenPowerOverhaul
 	{
 		const string PluginGUID = "Tidalwave.ForsakenPowerOverhaul";
 		const string PluginName = "Forsaken Power Overhaul";
-		const string PluginVersion = "1.0";
+		const string PluginVersion = "1.1";
 		
 		// Simple assert that works in release builds (like Python's assert)
 		private static void Assert(bool condition, string message = "Assertion failed")
