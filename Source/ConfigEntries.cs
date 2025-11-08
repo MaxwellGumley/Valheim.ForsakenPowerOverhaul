@@ -9,11 +9,13 @@ namespace ForsakenPowerOverhaul
 	partial class ForsakenPowerOverhaul : BaseUnityPlugin
 	{
 		static ConfigEntry<KeyCode> ConfigEntry_Button_PowerCycle;
-		
+
 		static ConfigEntry<string> ConfigEntry_General_Preset;
 		static ConfigEntry<int> ConfigEntry_General_GuardianPower_ActiveDuration;
 		static ConfigEntry<int> ConfigEntry_General_GuardianPower_CooldownDuration;
 		static ConfigEntry<bool> ConfigEntry_PowerCycle_Bool;
+
+		static ConfigEntry<bool> ConfigEntry_EnableDebugLogging;
 		
 		//Eikthyr
 		
@@ -150,6 +152,10 @@ namespace ForsakenPowerOverhaul
 			
 			//Extra
 			Config_SE_CorpseRun_Bool = Config.Bind("SX1 Server: Corpse Run", "Enabled", true, ConfigDescription_ExtraCorpseRun);
+
+			//Debug
+			ConfigEntry_EnableDebugLogging = Config.Bind("Debug", "EnableDebugLogging", false,
+				"Enable detailed debug logging for troubleshooting hotkey issues. Warning: Creates a lot of log output.");
 			
 			//Loop
 			foreach(string Power in List_BossNames)

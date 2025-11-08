@@ -58,6 +58,18 @@ namespace ForsakenPowerOverhaul
 		
 		static List<string> List_BossNames = new List<string>{ "Eikthyr", "TheElder", "Bonemass", "Moder", "Yagluth", "Queen", "Fader" };
 		static List<string> List_Components = new List<string>{ "Passive", "Equipped", "Active", "Shared" };
+
+		/// <summary>
+		/// Debug logging helper that only logs when debug logging is enabled in config.
+		/// Use this instead of log.LogInfo for debug-only messages.
+		/// </summary>
+		static void LogDebug(string message)
+		{
+			if (ConfigEntry_EnableDebugLogging != null && ConfigEntry_EnableDebugLogging.Value)
+			{
+				log.LogInfo($"[DEBUG] {message}");
+			}
+		}
 		
 		static List<StatusEffect_FPO> List_StatusEffect_FPO = new List<StatusEffect_FPO>();
 		static List<StatusEffect_FPO> List_StatusEffect_FPO_Passive = new List<StatusEffect_FPO>();
@@ -184,18 +196,26 @@ namespace ForsakenPowerOverhaul
 			// Only check UI blocking if the hotkey is actually pressed
 			if (ButtonConfig_PowerCycle != null &&
 				ConfigEntry_PowerCycle_Bool.Value &&
-				UnityEngine.Input.GetKeyDown(ButtonConfig_PowerCycle.Config.Value) &&
-				Player.m_localPlayer.GetGuardianPowerName().StartsWith("GP_"))
+				UnityEngine.Input.GetKeyDown(ButtonConfig_PowerCycle.Config.Value))
 			{
-				// Only check UI state if hotkey is pressed
-				if (!UiBlocking())
+				LogDebug($"Power cycle key pressed: {ButtonConfig_PowerCycle.Config.Value}");
+
+				if (!Player.m_localPlayer.GetGuardianPowerName().StartsWith("GP_"))
 				{
+					LogDebug($"Guardian power does not start with GP_: {Player.m_localPlayer.GetGuardianPowerName()}");
+				}
+				else if (UiBlocking())
+				{
+					LogDebug("UI is blocking input - skipping power cycle");
+				}
+				else
+				{
+					LogDebug("Calling Power_Cycle()");
 					Power_Cycle();
 				}
 			}
 
 			// Only run expensive updates periodically
-			float currentTime = Time.time;
 			if (currentTime - lastStatusEffectUpdate >= STATUS_EFFECT_UPDATE_INTERVAL)
 			{
 				Update_Player_StatusEffects();
@@ -1100,39 +1120,76 @@ namespace ForsakenPowerOverhaul
 		static bool UiBlocking()
 		{
 			// 1) text/typing or console/chat focus
-			if (Console.instance != null && Console.IsVisible()) return true; // F5 console open
-			if (Chat.instance != null && Chat.instance.HasFocus()) return true; // typing in chat
-			if (TextInput.IsVisible()) return true; // any text input popup
-			
+			if (Console.instance != null && Console.IsVisible())
+			{
+				LogDebug("UI Blocking: Console is visible");
+				return true; // F5 console open
+			}
+			if (Chat.instance != null && Chat.instance.HasFocus())
+			{
+				LogDebug("UI Blocking: Chat has focus");
+				return true; // typing in chat
+			}
+			if (TextInput.IsVisible())
+			{
+				LogDebug("UI Blocking: TextInput is visible");
+				return true; // any text input popup
+			}
+
 			// 2) major screens
-			if (InventoryGui.instance != null && InventoryGui.IsVisible()) return true;
-			if (StoreGui.instance != null && StoreGui.IsVisible()) return true;
-			if (Minimap.instance != null && Minimap.IsOpen()) return true; // map fullscreen
-			
+			if (InventoryGui.instance != null && InventoryGui.IsVisible())
+			{
+				LogDebug("UI Blocking: Inventory is visible");
+				return true;
+			}
+			if (StoreGui.instance != null && StoreGui.IsVisible())
+			{
+				LogDebug("UI Blocking: Store is visible");
+				return true;
+			}
+			if (Minimap.instance != null && Minimap.IsOpen())
+			{
+				LogDebug("UI Blocking: Minimap is open");
+				return true; // map fullscreen
+			}
+
 			// 3) top-level menus / pause
-			if (Menu.IsVisible()) return true; // esc menu / settings
-			
+			if (Menu.IsVisible())
+			{
+				LogDebug("UI Blocking: Menu is visible");
+				return true; // esc menu / settings
+			}
+
 			// 4) optional: block when the game wants the mouse cursor
-			if (GameCamera.instance != null && GameCamera.InFreeFly()) return true; // editor-like cam
-			
+			if (GameCamera.instance != null && GameCamera.InFreeFly())
+			{
+				LogDebug("UI Blocking: GameCamera is in free fly mode");
+				return true; // editor-like cam
+			}
+
 			// allow gameplay hotkeys
 			return false;
 		}
 		
 		static void Power_Cycle()
 		{
+			LogDebug("Power_Cycle() called");
+
 			// Prevent power cycling while an active ability is running
 			if (IsAnyActiveAbilityRunning())
 			{
+				LogDebug("Active ability is running - blocking power cycle");
 				Player.m_localPlayer.Message(MessageHud.MessageType.Center, "Cannot change powers while a power is active!");
 				return;
 			}
-			
+
 			List<string> PlayerKeys = new List<string>{ };
-			
+
 			PlayerKeys_Update();
-			
+
 			var localPlayerUniques = GetPlayerUniques(Player.m_localPlayer);
+			LogDebug($"Player has {localPlayerUniques.Count} unique keys");
+
 			foreach(string PlayerKey in localPlayerUniques)
 			{
 				foreach(string GlobalKey in ZoneSystem.instance.GetGlobalKeys())
@@ -1140,27 +1197,39 @@ namespace ForsakenPowerOverhaul
 					if(GlobalKey.StartsWith("gk_fpo_bossstone_"))
 					{
 						if((GetBossName(PlayerKey) == GetBossName(GlobalKey)))
-						{ PlayerKeys.Add(PlayerKey); }
+						{
+							PlayerKeys.Add(PlayerKey);
+							LogDebug($"Found matching power: {PlayerKey}");
+						}
 					}
 				}
 			}
-			
+
 			List<string> Powers = Power_Sort(PlayerKeys.ToList());
-			
+			LogDebug($"Total available powers: {Powers.Count}");
+
 			if(Powers.Count > 0)
 			{
 				int Index = 0;
-				
+				string currentPower = Player.m_localPlayer.GetGuardianPowerName();
+				LogDebug($"Current power: {currentPower}");
+
 				foreach(string Power in Powers)
 				{
 					if(Player.m_localPlayer.GetGuardianPowerName() == Power)
 					{ Index = Powers.IndexOf(Power); }
 				}
-				
+
 				if((Index + 1) == Powers.Count)
 				{ Index = -1; }
-				
-				Power_Set(Powers[Index + 1], false);
+
+				string nextPower = Powers[Index + 1];
+				LogDebug($"Switching from index {Index} to index {Index + 1}, power: {nextPower}");
+				Power_Set(nextPower, false);
+			}
+			else
+			{
+				LogDebug("No powers available to cycle");
 			}
 		}
 		
