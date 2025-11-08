@@ -189,8 +189,17 @@ namespace ForsakenPowerOverhaul
 			}
 		
 			Assert(StatusEffect_FPO_Passive != null, "StatusEffect_FPO_Passive is null despite StatusEffects being marked as ready");
-			
+
 			if(Player.m_localPlayer == null || Player.m_localPlayer.IsDead()) { return; }
+
+			// Player must be fully networked before we can add/remove status effects
+			// (AddStatusEffect calls ZNetView.InvokeRPC internally)
+			ZNetView playerNetView = Player.m_localPlayer.GetComponent<ZNetView>();
+			if(playerNetView == null || !playerNetView.IsValid())
+			{
+				LogDebug($"Player ZNetView not ready - playerNetView={playerNetView}, IsValid={playerNetView?.IsValid()}");
+				return;
+			}
 					
 			// Input handling runs every frame for responsiveness
 			// Only check UI blocking if the hotkey is actually pressed

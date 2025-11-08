@@ -126,34 +126,64 @@ namespace ForsakenPowerOverhaul
 		{
 			static bool Prefix(ref Player __instance, ref bool __result)
 			{
+				LogDebug("ActivateGuardianPower called");
+
 				if(__instance != null)
 				{
+					string guardianPower = __instance.GetGuardianPowerName();
+					LogDebug($"Guardian power name: {guardianPower}");
+					LogDebug($"Cooldown: {__instance.m_guardianPowerCooldown}");
+
 					if(__instance.m_guardianPowerCooldown > 0.00F)
-					{ __result = false; }
-					
+					{
+						LogDebug("Power on cooldown - blocking activation");
+						__result = false;
+					}
+
 					var guardianSE = GetGuardianSE(__instance);
 					if(guardianSE == null)
-					{ __result = false; }
-					
+					{
+						LogDebug("guardianSE is null - blocking activation");
+						__result = false;
+					}
+					else
+					{
+						LogDebug($"guardianSE found: {guardianSE}");
+					}
+
 					var seman = GetSEMan(__instance);
-					if(seman.GetStatusEffect(GetHash(__instance.GetGuardianPowerName().Replace("GP_", "SE_FPO_"))))
-					{ seman.RemoveStatusEffect(GetHash(__instance.GetGuardianPowerName().Replace("GP_", "SE_FPO_"))); }
-					
-					seman.AddStatusEffect(GetHash(__instance.GetGuardianPowerName().Replace("GP_", "SE_FPO_")), true);
+					string statusEffectName = guardianPower.Replace("GP_", "SE_FPO_");
+					LogDebug($"Status effect to apply: {statusEffectName}");
+
+					if(seman.GetStatusEffect(GetHash(statusEffectName)))
+					{
+						LogDebug($"Removing existing status effect: {statusEffectName}");
+						seman.RemoveStatusEffect(GetHash(statusEffectName));
+					}
+
+					LogDebug($"Adding status effect: {statusEffectName}");
+					seman.AddStatusEffect(GetHash(statusEffectName), true);
 					__instance.m_guardianPowerCooldown = ConfigEntry_General_GuardianPower_CooldownDuration.Value;
-					
+					LogDebug($"Set cooldown to: {ConfigEntry_General_GuardianPower_CooldownDuration.Value}");
+
 					foreach(StatusEffect New_StatusEffect in seman.GetStatusEffects())
 					{
-						if(New_StatusEffect.name.StartsWith("SE_FPO_") && (New_StatusEffect.name != "SE_FPO_Passive") && (New_StatusEffect.name != __instance.GetGuardianPowerName().Replace("GP_", "SE_FPO_")))
+						if(New_StatusEffect.name.StartsWith("SE_FPO_") && (New_StatusEffect.name != "SE_FPO_Passive") && (New_StatusEffect.name != statusEffectName))
 						{
+							LogDebug($"Removing conflicting status effect: {New_StatusEffect.name}");
 							seman.RemoveStatusEffect(New_StatusEffect);
 							break;
 						}
 					}
-					
+
+					LogDebug("Power activation complete");
 					__result = false;
 				}
-				
+				else
+				{
+					LogDebug("__instance is null");
+				}
+
 				return false;
 			}
 		}
