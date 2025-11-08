@@ -55,7 +55,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Jotunn">
-      <HintPath>$(ValheimInstall)\BepInEx\plugins\Libraries\Jotunn\Jotunn.dll</HintPath>
+      <HintPath>$(ValheimInstall)\BepInEx\plugins\Libraries\ValheimModding-Jotunn-2.27.0\plugins\Jotunn.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.ParticleSystemModule">
@@ -72,8 +72,8 @@
            Text="Valheim assembly_valheim.dll not found at: $(ValheimInstall)\valheim_Data\Managed\assembly_valheim.dll" />
     <Error Condition="!Exists('$(ValheimInstall)\BepInEx\core\BepInEx.dll')" 
            Text="BepInEx.dll not found at: $(ValheimInstall)\BepInEx\core\BepInEx.dll. Make sure BepInEx is installed." />
-    <Error Condition="!Exists('$(ValheimInstall)\BepInEx\plugins\Libraries\Jotunn\Jotunn.dll')" 
-           Text="Jotunn.dll not found at: $(ValheimInstall)\BepInEx\plugins\Libraries\Jotunn\Jotunn.dll. Make sure Jotunn is installed." />
+    <Error Condition="!Exists('$(ValheimInstall)\BepInEx\plugins\Libraries\ValheimModding-Jotunn-2.27.0\plugins\Jotunn.dll')"
+           Text="Jotunn.dll not found at: $(ValheimInstall)\BepInEx\plugins\Libraries\ValheimModding-Jotunn-2.27.0\plugins\Jotunn.dll. Make sure Jotunn is installed." />
     <Message Text="Valheim installation validated at: $(ValheimInstall)" Importance="high" />
   </Target>
 
