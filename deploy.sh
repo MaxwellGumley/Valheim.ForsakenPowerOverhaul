@@ -9,7 +9,7 @@ set -e  # Exit on any error
 PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_NAME="Tidalwave.ForsakenPowerOverhaul"
 VALHEIM_INSTALL="C:/Program Files (x86)/Steam/steamapps/common/Valheim"
-PLUGIN_DIR="$VALHEIM_INSTALL/BepInEx/plugins/Tidalwave.ForsakenPowerOverhaul"
+PLUGIN_DIR="$VALHEIM_INSTALL/BepInEx/plugins/Tidalwave-custom/Tidalwave.ForsakenPowerOverhaul"
 DLL_SOURCE="$PROJECT_DIR/bin/Release/$PROJECT_NAME.dll"
 
 echo "=========================================="
